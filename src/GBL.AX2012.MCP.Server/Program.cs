@@ -65,6 +65,15 @@ try
     // Register Approval
     builder.Services.AddSingleton<IApprovalService, ApprovalService>();
     
+    // Register Notifications
+    builder.Services.Configure<NotificationOptions>(builder.Configuration.GetSection("Notifications"));
+    builder.Services.AddHttpClient("Notifications");
+    builder.Services.AddSingleton<INotificationService, NullNotificationService>(); // Use NotificationService when webhooks configured
+    
+    // Register Kill Switch
+    builder.Services.AddSingleton<IKillSwitchService, KillSwitchService>();
+    builder.Services.AddSingleton<KillSwitchInputValidator>();
+    
     // Register AX Connectors
     builder.Services.AddHttpClient<IAifClient, AifClient>()
         .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
@@ -129,6 +138,9 @@ try
     builder.Services.AddSingleton<ITool, AddNoteTool>();
     builder.Services.AddSingleton<ITool, CheckCreditTool>();
     builder.Services.AddSingleton<ITool, QueryAuditTool>();
+    
+    // Register Tools - Admin
+    builder.Services.AddSingleton<ITool, KillSwitchTool>();
     
     // Register MCP Server (stdio)
     builder.Services.AddHostedService<McpServer>();
