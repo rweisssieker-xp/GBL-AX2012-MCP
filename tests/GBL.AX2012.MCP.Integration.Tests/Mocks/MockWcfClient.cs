@@ -24,6 +24,12 @@ public class MockWcfClient : IWcfClient
         return Task.FromResult(true);
     }
     
+    public Task<int> AddSalesLineAsync(SalesLineCreateRequest request, CancellationToken cancellationToken = default)
+    {
+        // Return next line number
+        return Task.FromResult(10);
+    }
+    
     public void Dispose()
     {
     }

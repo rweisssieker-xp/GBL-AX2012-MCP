@@ -12,6 +12,7 @@ using GBL.AX2012.MCP.Server.Metrics;
 using GBL.AX2012.MCP.Server.Transport;
 using GBL.AX2012.MCP.Server.Approval;
 using GBL.AX2012.MCP.Server.Notifications;
+using GBL.AX2012.MCP.Server.Monitoring;
 using GBL.AX2012.MCP.AxConnector.Clients;
 using GBL.AX2012.MCP.AxConnector.Interfaces;
 using GBL.AX2012.MCP.Audit.Services;
@@ -105,6 +106,10 @@ try
     builder.Services.AddSingleton<AddNoteInputValidator>();
     builder.Services.AddSingleton<CheckCreditInputValidator>();
     builder.Services.AddSingleton<QueryAuditInputValidator>();
+    builder.Services.AddSingleton<CheckAvailabilityForecastInputValidator>();
+    builder.Services.AddSingleton<UpdateDeliveryDateInputValidator>();
+    builder.Services.AddSingleton<AddSalesLineInputValidator>();
+    builder.Services.AddSingleton<ReleaseForPickingInputValidator>();
     
     // Register Tools - Phase 1: Order Capture
     builder.Services.AddSingleton<ITool, HealthCheckTool>();
@@ -141,6 +146,17 @@ try
     
     // Register Tools - Admin
     builder.Services.AddSingleton<ITool, KillSwitchTool>();
+    
+    // Register Tools - Extended P1 Features
+    builder.Services.AddSingleton<ITool, CheckAvailabilityForecastTool>();
+    builder.Services.AddSingleton<ITool, UpdateDeliveryDateTool>();
+    builder.Services.AddSingleton<ITool, AddSalesLineTool>();
+    builder.Services.AddSingleton<ITool, ReleaseForPickingTool>();
+    
+    // Register Health Monitor
+    builder.Services.Configure<HealthMonitorOptions>(builder.Configuration.GetSection(HealthMonitorOptions.SectionName));
+    builder.Services.AddSingleton<HealthMonitorService>();
+    builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
     
     // Register MCP Server (stdio)
     builder.Services.AddHostedService<McpServer>();

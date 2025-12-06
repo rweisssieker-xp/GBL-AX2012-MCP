@@ -24,6 +24,12 @@ public class BusinessConnectorClient : IBusinessConnector
         _logger = logger;
     }
     
+    public async Task<bool> TestConnectionAsync(CancellationToken cancellationToken = default)
+    {
+        var result = await CheckHealthAsync(cancellationToken);
+        return result.AosConnected;
+    }
+    
     public Task<AxHealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken = default)
     {
         return Task.Run(() =>

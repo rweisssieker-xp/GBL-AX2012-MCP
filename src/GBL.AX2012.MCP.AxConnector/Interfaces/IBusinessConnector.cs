@@ -3,6 +3,7 @@ namespace GBL.AX2012.MCP.AxConnector.Interfaces;
 public interface IBusinessConnector : IDisposable
 {
     Task<AxHealthCheckResult> CheckHealthAsync(CancellationToken cancellationToken = default);
+    Task<bool> TestConnectionAsync(CancellationToken cancellationToken = default);
     bool IsConnected { get; }
 }
 

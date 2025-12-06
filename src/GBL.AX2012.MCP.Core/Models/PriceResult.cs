@@ -6,6 +6,7 @@ public record PriceResult
     public decimal CustomerDiscountPct { get; init; }
     public decimal QuantityDiscountPct { get; init; }
     public decimal FinalUnitPrice { get; init; }
+    public decimal UnitPrice => FinalUnitPrice; // Alias
     public decimal LineAmount { get; init; }
     public string Currency { get; init; } = "EUR";
     public string PriceSource { get; init; } = "";

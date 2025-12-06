@@ -22,6 +22,11 @@ public class MockBusinessConnector : IBusinessConnector
         });
     }
     
+    public Task<bool> TestConnectionAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(true);
+    }
+    
     public void Dispose()
     {
     }

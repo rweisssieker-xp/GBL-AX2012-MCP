@@ -156,8 +156,8 @@ workflows:
       - "Health check tests"
 
 final_summary:
-  version: "1.3.0"
-  total_tools: 22
+  version: "1.4.0"
+  total_tools: 26
   total_tests: 31
   build_status: SUCCESS
   test_status: "31/31 passed"
@@ -168,6 +168,14 @@ final_summary:
     - "Slack/Teams Notifications"
     - "EF Core Audit DB Support"
     - "Notification Service"
+    
+  new_features_v1_4:
+    - "ax_check_availability_forecast - Wann ist Artikel wieder verfügbar?"
+    - "ax_update_delivery_date - Liefertermin ändern"
+    - "ax_add_salesline - Zeile zu Auftrag hinzufügen"
+    - "ax_release_for_picking - Freigabe an Lager"
+    - "Health Monitor Service - AOS connectivity check (30s)"
+    - "Error Rate Spike Detection"
   
 next_recommended:
   - workflow: integration-testing

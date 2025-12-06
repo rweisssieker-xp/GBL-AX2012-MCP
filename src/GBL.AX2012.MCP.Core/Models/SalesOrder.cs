@@ -8,6 +8,7 @@ public record SalesOrder
     public string? CustomerRef { get; init; }
     public DateTime OrderDate { get; init; }
     public DateTime RequestedDelivery { get; init; }
+    public DateTime RequestedDeliveryDate => RequestedDelivery; // Alias for compatibility
     public string Status { get; init; } = "";
     public decimal TotalAmount { get; init; }
     public string Currency { get; init; } = "EUR";
@@ -22,8 +23,10 @@ public record SalesLine
     public decimal Quantity { get; init; }
     public decimal UnitPrice { get; init; }
     public decimal LineAmount { get; init; }
+    public decimal NetAmount => LineAmount; // Alias
     public decimal ReservedQty { get; init; }
     public decimal DeliveredQty { get; init; }
+    public string? WarehouseId { get; init; }
 }
 
 public class SalesOrderFilter

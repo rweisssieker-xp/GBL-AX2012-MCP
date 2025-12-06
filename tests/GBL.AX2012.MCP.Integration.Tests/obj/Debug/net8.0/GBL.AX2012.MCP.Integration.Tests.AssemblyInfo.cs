@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GBL.AX2012.MCP.Integration.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dc0823f1e84c5f07b4d8f86cc4f349a79d76b26e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6124b0ec3b7e6713edc45ceda3e8371227bd3669")]
 [assembly: System.Reflection.AssemblyProductAttribute("GBL.AX2012.MCP.Integration.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GBL.AX2012.MCP.Integration.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

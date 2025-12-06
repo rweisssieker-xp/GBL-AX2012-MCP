@@ -136,6 +136,52 @@ public class WcfClient : IWcfClient, IDisposable
         }, cancellationToken);
     }
     
+    public async Task<int> AddSalesLineAsync(SalesLineCreateRequest request, CancellationToken cancellationToken = default)
+    {
+        return await _circuitBreaker.ExecuteAsync(async () =>
+        {
+            if (_channelFactory == null)
+            {
+                throw new AxException("WCF_NOT_CONFIGURED", "WCF client is not properly configured");
+            }
+            
+            var channel = _channelFactory.CreateChannel();
+            
+            try
+            {
+                _logger.LogDebug("Adding sales line to order {SalesId}: {ItemId} x {Quantity}", 
+                    request.SalesId, request.ItemId, request.Quantity);
+                
+                var wcfRequest = new WcfAddSalesLineRequest
+                {
+                    SalesId = request.SalesId,
+                    ItemId = request.ItemId,
+                    Quantity = request.Quantity,
+                    UnitId = request.UnitId ?? "pcs",
+                    UnitPrice = request.UnitPrice,
+                    DiscountPercent = request.DiscountPercent,
+                    WarehouseId = request.WarehouseId ?? "WH-MAIN",
+                    RequestedDeliveryDate = request.RequestedDeliveryDate
+                };
+                
+                var response = await channel.AddSalesLineAsync(wcfRequest);
+                
+                if (!response.Success)
+                {
+                    _logger.LogError("Failed to add sales line: {Code} - {Message}", response.ErrorCode, response.ErrorMessage);
+                    throw new AxException(response.ErrorCode ?? "AX_ERROR", response.ErrorMessage ?? "Unknown error");
+                }
+                
+                _logger.LogInformation("Added line {LineNum} to order {SalesId}", response.LineNum, request.SalesId);
+                return response.LineNum;
+            }
+            finally
+            {
+                CloseChannel(channel);
+            }
+        }, cancellationToken);
+    }
+    
     private void CloseChannel(IGblSalesOrderService channel)
     {
         try
@@ -170,6 +216,9 @@ public interface IGblSalesOrderService
     
     [OperationContract]
     Task<WcfUpdateSalesOrderResponse> UpdateSalesOrderAsync(WcfUpdateSalesOrderRequest request);
+    
+    [OperationContract]
+    Task<WcfAddSalesLineResponse> AddSalesLineAsync(WcfAddSalesLineRequest request);
 }
 
 // WCF Data Contracts
@@ -212,6 +261,28 @@ public class WcfUpdateSalesOrderRequest
 public class WcfUpdateSalesOrderResponse
 {
     [System.Runtime.Serialization.DataMember] public bool Success { get; set; }
+    [System.Runtime.Serialization.DataMember] public string? ErrorCode { get; set; }
+    [System.Runtime.Serialization.DataMember] public string? ErrorMessage { get; set; }
+}
+
+[System.Runtime.Serialization.DataContract(Namespace = "http://gbl.com/ax2012/services")]
+public class WcfAddSalesLineRequest
+{
+    [System.Runtime.Serialization.DataMember] public string SalesId { get; set; } = "";
+    [System.Runtime.Serialization.DataMember] public string ItemId { get; set; } = "";
+    [System.Runtime.Serialization.DataMember] public decimal Quantity { get; set; }
+    [System.Runtime.Serialization.DataMember] public string UnitId { get; set; } = "";
+    [System.Runtime.Serialization.DataMember] public decimal UnitPrice { get; set; }
+    [System.Runtime.Serialization.DataMember] public decimal DiscountPercent { get; set; }
+    [System.Runtime.Serialization.DataMember] public string WarehouseId { get; set; } = "";
+    [System.Runtime.Serialization.DataMember] public DateTime? RequestedDeliveryDate { get; set; }
+}
+
+[System.Runtime.Serialization.DataContract(Namespace = "http://gbl.com/ax2012/services")]
+public class WcfAddSalesLineResponse
+{
+    [System.Runtime.Serialization.DataMember] public bool Success { get; set; }
+    [System.Runtime.Serialization.DataMember] public int LineNum { get; set; }
     [System.Runtime.Serialization.DataMember] public string? ErrorCode { get; set; }
     [System.Runtime.Serialization.DataMember] public string? ErrorMessage { get; set; }
 }

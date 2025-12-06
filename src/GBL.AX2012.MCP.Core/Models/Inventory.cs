@@ -6,6 +6,7 @@ public record InventoryOnHand
     public string ItemName { get; init; } = "";
     public decimal TotalOnHand { get; init; }
     public decimal Available { get; init; }
+    public decimal AvailablePhysical => Available; // Alias
     public decimal Reserved { get; init; }
     public decimal OnOrder { get; init; }
     public List<WarehouseInventory> Warehouses { get; init; } = new();
