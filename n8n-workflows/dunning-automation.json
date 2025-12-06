@@ -1,0 +1,133 @@
+{
+  "name": "AX2012 - Dunning Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "hours", "hoursInterval": 24 }] }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mcp-server:8080/tools/call",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "tool", "value": "ax_get_customer_aging" },
+            { "name": "arguments", "value": "={{ JSON.stringify({ customerAccount: $json.customerAccount, includeOpenInvoices: true }) }}" }
+          ]
+        }
+      },
+      "id": "get-aging",
+      "name": "Get Customer Aging",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [{ "value1": "={{ $json.data.dunningLevel }}", "operation": "larger", "value2": 0 }]
+        }
+      },
+      "id": "needs-dunning",
+      "name": "Needs Dunning?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            { "value1": "={{ $json.data.dunningLevel }}", "value2": 1 },
+            { "value1": "={{ $json.data.dunningLevel }}", "value2": 2 },
+            { "value1": "={{ $json.data.dunningLevel }}", "operation": "largerEqual", "value2": 3 }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "id": "dunning-level",
+      "name": "Dunning Level",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "ar@company.com",
+        "toEmail": "={{ $json.data.customerEmail }}",
+        "subject": "Payment Reminder - {{ $json.data.customerName }}",
+        "text": "Dear {{ $json.data.customerName }},\n\nThis is a friendly reminder that you have an outstanding balance of {{ $json.data.totalBalance }} {{ $json.data.currency }}.\n\nPlease arrange payment at your earliest convenience.\n\nBest regards,\nAccounts Receivable"
+      },
+      "id": "send-reminder-1",
+      "name": "Send Reminder Level 1",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1250, 100]
+    },
+    {
+      "parameters": {
+        "fromEmail": "ar@company.com",
+        "toEmail": "={{ $json.data.customerEmail }}",
+        "subject": "URGENT: Payment Overdue - {{ $json.data.customerName }}",
+        "text": "Dear {{ $json.data.customerName }},\n\nYour account is now 30+ days overdue with a balance of {{ $json.data.totalBalance }} {{ $json.data.currency }}.\n\nPlease arrange immediate payment to avoid further action.\n\nBest regards,\nAccounts Receivable"
+      },
+      "id": "send-reminder-2",
+      "name": "Send Reminder Level 2",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1250, 250]
+    },
+    {
+      "parameters": {
+        "channel": "#collections",
+        "text": "🚨 *COLLECTIONS REQUIRED*\n\nCustomer: {{ $json.data.customerName }} ({{ $json.data.customerAccount }})\nBalance: {{ $json.data.totalBalance }} {{ $json.data.currency }}\nOverdue: 60+ days\nDunning Level: {{ $json.data.dunningLevel }}\n\nPlease escalate to collections team."
+      },
+      "id": "escalate-collections",
+      "name": "Escalate to Collections",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1250, 400]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://mcp-server:8080/tools/call",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "tool", "value": "ax_get_customer" },
+            { "name": "arguments", "value": "{}" }
+          ]
+        }
+      },
+      "id": "get-customers",
+      "name": "Get All Customers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300],
+      "notes": "In production, this would query a list of active customers"
+    }
+  ],
+  "connections": {
+    "Daily Schedule": { "main": [[{ "node": "Get All Customers", "type": "main", "index": 0 }]] },
+    "Get All Customers": { "main": [[{ "node": "Get Customer Aging", "type": "main", "index": 0 }]] },
+    "Get Customer Aging": { "main": [[{ "node": "Needs Dunning?", "type": "main", "index": 0 }]] },
+    "Needs Dunning?": { "main": [[{ "node": "Dunning Level", "type": "main", "index": 0 }], []] },
+    "Dunning Level": {
+      "main": [
+        [{ "node": "Send Reminder Level 1", "type": "main", "index": 0 }],
+        [{ "node": "Send Reminder Level 2", "type": "main", "index": 0 }],
+        [{ "node": "Escalate to Collections", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["ax2012", "dunning", "ar"]
+}

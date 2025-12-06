@@ -1,0 +1,157 @@
+{
+  "name": "AX2012 - Payment Processing",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bank-statement",
+        "responseMode": "responseNode"
+      },
+      "id": "webhook-trigger",
+      "name": "Bank Statement Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.transactions",
+        "options": {}
+      },
+      "id": "split-transactions",
+      "name": "Split Transactions",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "content": "Extract customer account and invoice reference from this bank transaction. Return JSON with: customer_account (or null), invoice_reference (or null), amount, currency.\n\nTransaction:\nDescription: {{$json.description}}\nAmount: {{$json.amount}}\nReference: {{$json.reference}}"
+            }
+          ]
+        },
+        "options": { "temperature": 0 }
+      },
+      "id": "extract-payment-info",
+      "name": "Extract Payment Info",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [{ "value1": "={{ $json.customer_account }}", "operation": "isNotEmpty" }]
+        }
+      },
+      "id": "customer-identified",
+      "name": "Customer Identified?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mcp-server:8080/tools/call",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "tool", "value": "ax_post_payment" },
+            {
+              "name": "arguments",
+              "value": "={{ JSON.stringify({ customerAccount: $json.customer_account, amount: $json.amount, currency: $json.currency, paymentReference: $('Split Transactions').item.json.reference, invoicesToSettle: $json.invoice_reference ? [$json.invoice_reference] : [] }) }}"
+            }
+          ]
+        }
+      },
+      "id": "post-payment",
+      "name": "Post Payment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [{ "value1": "={{ $json.data.remainingAmount }}", "operation": "equal", "value2": 0 }]
+        }
+      },
+      "id": "fully-applied",
+      "name": "Fully Applied?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "channel": "#finance",
+        "text": "✅ *Payment Applied*\n\nCustomer: {{ $('Extract Payment Info').item.json.customer_account }}\nAmount: {{ $('Extract Payment Info').item.json.amount }} {{ $('Extract Payment Info').item.json.currency }}\nPayment ID: {{ $json.data.paymentId }}\nStatus: Fully Applied"
+      },
+      "id": "notify-applied",
+      "name": "Notify Applied",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1450, 100]
+    },
+    {
+      "parameters": {
+        "channel": "#finance",
+        "text": "⚠️ *Payment Partially Applied*\n\nCustomer: {{ $('Extract Payment Info').item.json.customer_account }}\nAmount: {{ $('Extract Payment Info').item.json.amount }} {{ $('Extract Payment Info').item.json.currency }}\nPayment ID: {{ $json.data.paymentId }}\nRemaining: {{ $json.data.remainingAmount }}\n\nPlease review and apply manually."
+      },
+      "id": "notify-partial",
+      "name": "Notify Partial",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1450, 300]
+    },
+    {
+      "parameters": {
+        "channel": "#finance",
+        "text": "❓ *Unmatched Payment*\n\nAmount: {{ $('Split Transactions').item.json.amount }}\nReference: {{ $('Split Transactions').item.json.reference }}\nDescription: {{ $('Split Transactions').item.json.description }}\n\nCould not identify customer. Please process manually."
+      },
+      "id": "notify-unmatched",
+      "name": "Notify Unmatched",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1050, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, processed: $itemIndex + 1 }) }}"
+      },
+      "id": "respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1650, 200]
+    }
+  ],
+  "connections": {
+    "Bank Statement Webhook": { "main": [[{ "node": "Split Transactions", "type": "main", "index": 0 }]] },
+    "Split Transactions": { "main": [[{ "node": "Extract Payment Info", "type": "main", "index": 0 }]] },
+    "Extract Payment Info": { "main": [[{ "node": "Customer Identified?", "type": "main", "index": 0 }]] },
+    "Customer Identified?": {
+      "main": [
+        [{ "node": "Post Payment", "type": "main", "index": 0 }],
+        [{ "node": "Notify Unmatched", "type": "main", "index": 0 }]
+      ]
+    },
+    "Post Payment": { "main": [[{ "node": "Fully Applied?", "type": "main", "index": 0 }]] },
+    "Fully Applied?": {
+      "main": [
+        [{ "node": "Notify Applied", "type": "main", "index": 0 }],
+        [{ "node": "Notify Partial", "type": "main", "index": 0 }]
+      ]
+    },
+    "Notify Applied": { "main": [[{ "node": "Respond Success", "type": "main", "index": 0 }]] },
+    "Notify Partial": { "main": [[{ "node": "Respond Success", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["ax2012", "payments", "bank"]
+}

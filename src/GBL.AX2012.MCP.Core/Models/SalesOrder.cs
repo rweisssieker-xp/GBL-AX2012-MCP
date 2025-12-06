@@ -5,6 +5,7 @@ public record SalesOrder
     public string SalesId { get; init; } = "";
     public string CustomerAccount { get; init; } = "";
     public string CustomerName { get; init; } = "";
+    public string? CustomerRef { get; init; }
     public DateTime OrderDate { get; init; }
     public DateTime RequestedDelivery { get; init; }
     public string Status { get; init; } = "";

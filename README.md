@@ -2,12 +2,13 @@
 
 **Model Context Protocol (MCP) Server for Microsoft Dynamics AX 2012 R3**
 
-A production-ready MCP server that enables AI assistants to interact with AX 2012 R3 for Order-to-Cash (O2C) automation.
+A production-ready MCP server that enables AI assistants to interact with AX 2012 R3 for **complete Order-to-Cash (O2C) automation**.
 
 ## Features
 
-### Tools
+### Tools - Full O2C Coverage
 
+#### Phase 1: Order Capture
 | Tool | Description | Role |
 |------|-------------|------|
 | `ax_health_check` | Check server and AX connectivity | Read |
@@ -16,6 +17,31 @@ A production-ready MCP server that enables AI assistants to interact with AX 201
 | `ax_check_inventory` | Check item availability | Read |
 | `ax_simulate_price` | Simulate pricing without creating order | Read |
 | `ax_create_salesorder` | Create new sales order | Write |
+
+#### Phase 2: Fulfillment
+| Tool | Description | Role |
+|------|-------------|------|
+| `ax_reserve_salesline` | Reserve inventory for order line | Write |
+| `ax_post_shipment` | Post shipment/packing slip | Write |
+
+#### Phase 3: Invoice & Dunning
+| Tool | Description | Role |
+|------|-------------|------|
+| `ax_create_invoice` | Create and post invoice | Write |
+| `ax_get_customer_aging` | Get AR aging and open invoices | Read |
+
+#### Phase 4: Payment & Close
+| Tool | Description | Role |
+|------|-------------|------|
+| `ax_post_payment` | Post customer payment | Write |
+| `ax_settle_invoice` | Settle invoice against payment | Write |
+| `ax_close_salesorder` | Close completed order | Write |
+
+#### Approval Workflow
+| Tool | Description | Role |
+|------|-------------|------|
+| `ax_request_approval` | Request approval for high-value operations | Write |
+| `ax_get_approval_status` | Check approval status | Read |
 
 ### Architecture
 
@@ -46,6 +72,14 @@ A production-ready MCP server that enables AI assistants to interact with AX 201
                     └───────────────────┘
 ```
 
+### Multi-Channel Transport
+
+| Transport | Port | Description |
+|-----------|------|-------------|
+| **stdio** | - | Standard MCP protocol for Claude Desktop |
+| **HTTP** | 8080 | REST API for n8n, webhooks, custom integrations |
+| **Metrics** | 9090 | Prometheus metrics endpoint |
+
 ## Quick Start
 
 ### Prerequisites
@@ -71,6 +105,24 @@ dotnet run --project src/GBL.AX2012.MCP.Server
 
 ```bash
 dotnet test
+```
+
+### HTTP API Usage
+
+```bash
+# List tools
+curl http://localhost:8080/tools
+
+# Call a tool
+curl -X POST http://localhost:8080/tools/call \
+  -H "Content-Type: application/json" \
+  -d '{"tool": "ax_get_customer", "arguments": {"customerAccount": "CUST-001"}}'
+
+# Health check
+curl http://localhost:8080/health
+
+# Prometheus metrics
+curl http://localhost:9090/metrics
 ```
 
 ## Configuration

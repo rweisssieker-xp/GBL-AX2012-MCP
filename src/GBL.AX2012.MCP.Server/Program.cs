@@ -8,6 +8,10 @@ using GBL.AX2012.MCP.Server;
 using GBL.AX2012.MCP.Server.Middleware;
 using GBL.AX2012.MCP.Server.Security;
 using GBL.AX2012.MCP.Server.Tools;
+using GBL.AX2012.MCP.Server.Metrics;
+using GBL.AX2012.MCP.Server.Transport;
+using GBL.AX2012.MCP.Server.Approval;
+using GBL.AX2012.MCP.Server.Notifications;
 using GBL.AX2012.MCP.AxConnector.Clients;
 using GBL.AX2012.MCP.AxConnector.Interfaces;
 using GBL.AX2012.MCP.Audit.Services;
@@ -44,6 +48,7 @@ try
     builder.Services.Configure<CircuitBreakerOptions>(builder.Configuration.GetSection(CircuitBreakerOptions.SectionName));
     builder.Services.Configure<AuditOptions>(builder.Configuration.GetSection(AuditOptions.SectionName));
     builder.Services.Configure<SecurityOptions>(builder.Configuration.GetSection(SecurityOptions.SectionName));
+    builder.Services.Configure<HttpTransportOptions>(builder.Configuration.GetSection(HttpTransportOptions.SectionName));
     
     // Register Middleware
     builder.Services.AddSingleton<IRateLimiter, RateLimiter>();
@@ -56,6 +61,9 @@ try
     
     // Register Audit
     builder.Services.AddSingleton<IAuditService, FileAuditService>();
+    
+    // Register Approval
+    builder.Services.AddSingleton<IApprovalService, ApprovalService>();
     
     // Register AX Connectors
     builder.Services.AddHttpClient<IAifClient, AifClient>()
@@ -73,8 +81,23 @@ try
     builder.Services.AddSingleton<CheckInventoryInputValidator>();
     builder.Services.AddSingleton<SimulatePriceInputValidator>();
     builder.Services.AddSingleton<CreateSalesOrderInputValidator>();
+    builder.Services.AddSingleton<ReserveSalesLineInputValidator>();
+    builder.Services.AddSingleton<PostShipmentInputValidator>();
+    builder.Services.AddSingleton<CreateInvoiceInputValidator>();
+    builder.Services.AddSingleton<GetCustomerAgingInputValidator>();
+    builder.Services.AddSingleton<PostPaymentInputValidator>();
+    builder.Services.AddSingleton<SettleInvoiceInputValidator>();
+    builder.Services.AddSingleton<CloseSalesOrderInputValidator>();
+    builder.Services.AddSingleton<RequestApprovalInputValidator>();
+    builder.Services.AddSingleton<GetApprovalStatusInputValidator>();
+    builder.Services.AddSingleton<GetItemInputValidator>();
+    builder.Services.AddSingleton<UpdateSalesOrderInputValidator>();
+    builder.Services.AddSingleton<GetInvoiceInputValidator>();
+    builder.Services.AddSingleton<AddNoteInputValidator>();
+    builder.Services.AddSingleton<CheckCreditInputValidator>();
+    builder.Services.AddSingleton<QueryAuditInputValidator>();
     
-    // Register Tools
+    // Register Tools - Phase 1: Order Capture
     builder.Services.AddSingleton<ITool, HealthCheckTool>();
     builder.Services.AddSingleton<ITool, GetCustomerTool>();
     builder.Services.AddSingleton<ITool, GetSalesOrderTool>();
@@ -82,8 +105,39 @@ try
     builder.Services.AddSingleton<ITool, SimulatePriceTool>();
     builder.Services.AddSingleton<ITool, CreateSalesOrderTool>();
     
-    // Register MCP Server
+    // Register Tools - Phase 2: Fulfillment
+    builder.Services.AddSingleton<ITool, ReserveSalesLineTool>();
+    builder.Services.AddSingleton<ITool, PostShipmentTool>();
+    
+    // Register Tools - Phase 3: Invoice & Dunning
+    builder.Services.AddSingleton<ITool, CreateInvoiceTool>();
+    builder.Services.AddSingleton<ITool, GetCustomerAgingTool>();
+    
+    // Register Tools - Phase 4: Payment & Close
+    builder.Services.AddSingleton<ITool, PostPaymentTool>();
+    builder.Services.AddSingleton<ITool, SettleInvoiceTool>();
+    builder.Services.AddSingleton<ITool, CloseSalesOrderTool>();
+    
+    // Register Tools - Approval Workflow
+    builder.Services.AddSingleton<ITool, RequestApprovalTool>();
+    builder.Services.AddSingleton<ITool, GetApprovalStatusTool>();
+    
+    // Register Tools - Master Data & Utilities
+    builder.Services.AddSingleton<ITool, GetItemTool>();
+    builder.Services.AddSingleton<ITool, UpdateSalesOrderTool>();
+    builder.Services.AddSingleton<ITool, GetInvoiceTool>();
+    builder.Services.AddSingleton<ITool, AddNoteTool>();
+    builder.Services.AddSingleton<ITool, CheckCreditTool>();
+    builder.Services.AddSingleton<ITool, QueryAuditTool>();
+    
+    // Register MCP Server (stdio)
     builder.Services.AddHostedService<McpServer>();
+    
+    // Register HTTP Transport (port 8080)
+    builder.Services.AddHostedService<HttpTransport>();
+    
+    // Register Metrics Server (port 9090)
+    builder.Services.AddHostedService<MetricsServer>();
     
     var host = builder.Build();
     await host.RunAsync();

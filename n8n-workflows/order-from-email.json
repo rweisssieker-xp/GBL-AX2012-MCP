@@ -1,0 +1,125 @@
+{
+  "name": "AX2012 - Order from Email",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": { "item": [{ "mode": "everyMinute" }] },
+        "filters": { "readStatus": "unread", "sender": "" },
+        "options": {}
+      },
+      "id": "email-trigger",
+      "name": "Email Trigger",
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4",
+        "messages": {
+          "values": [
+            {
+              "content": "Extract order information from this email. Return JSON with: customer_name, items (array of {item_id, quantity}), requested_delivery_date (YYYY-MM-DD or null).\n\nEmail:\n{{$json.text}}"
+            }
+          ]
+        },
+        "options": { "temperature": 0 }
+      },
+      "id": "extract-order",
+      "name": "Extract Order Info",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mcp-server:8080/tools/call",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "tool", "value": "ax_get_customer" },
+            { "name": "arguments", "value": "={{ JSON.stringify({ customerName: $json.customer_name }) }}" }
+          ]
+        }
+      },
+      "id": "find-customer",
+      "name": "Find Customer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [{ "value1": "={{ $json.success }}", "value2": true }]
+        }
+      },
+      "id": "customer-found",
+      "name": "Customer Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mcp-server:8080/tools/call",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "tool", "value": "ax_create_salesorder" },
+            {
+              "name": "arguments",
+              "value": "={{ JSON.stringify({ customerAccount: $('Find Customer').item.json.data.matches[0].customerAccount, lines: $('Extract Order Info').item.json.items.map(i => ({ itemId: i.item_id, quantity: i.quantity })), idempotencyKey: $runIndex + '-' + Date.now() }) }}"
+            }
+          ]
+        }
+      },
+      "id": "create-order",
+      "name": "Create Sales Order",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "fromEmail": "orders@company.com",
+        "toEmail": "={{ $('Email Trigger').item.json.from }}",
+        "subject": "Order Confirmation - {{ $json.data.salesId }}",
+        "text": "Your order {{ $json.data.salesId }} has been created.\n\nCustomer: {{ $json.data.customerAccount }}\nTotal: {{ $json.data.totalAmount }} {{ $json.data.currency }}\nLines: {{ $json.data.linesCreated }}\n\nThank you for your order!"
+      },
+      "id": "send-confirmation",
+      "name": "Send Confirmation",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "channel": "#orders",
+        "text": "⚠️ Could not find customer for email order.\n\nFrom: {{ $('Email Trigger').item.json.from }}\nExtracted Name: {{ $('Extract Order Info').item.json.customer_name }}\n\nPlease process manually."
+      },
+      "id": "notify-manual",
+      "name": "Notify Manual Processing",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1050, 400]
+    }
+  ],
+  "connections": {
+    "Email Trigger": { "main": [[{ "node": "Extract Order Info", "type": "main", "index": 0 }]] },
+    "Extract Order Info": { "main": [[{ "node": "Find Customer", "type": "main", "index": 0 }]] },
+    "Find Customer": { "main": [[{ "node": "Customer Found?", "type": "main", "index": 0 }]] },
+    "Customer Found?": {
+      "main": [
+        [{ "node": "Create Sales Order", "type": "main", "index": 0 }],
+        [{ "node": "Notify Manual Processing", "type": "main", "index": 0 }]
+      ]
+    },
+    "Create Sales Order": { "main": [[{ "node": "Send Confirmation", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "staticData": null,
+  "tags": ["ax2012", "orders", "email"]
+}

@@ -1,0 +1,162 @@
+{
+  "name": "AX2012 - Order Fulfillment",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "order-confirmed",
+        "responseMode": "responseNode"
+      },
+      "id": "webhook-trigger",
+      "name": "Order Confirmed Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mcp-server:8080/tools/call",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "tool", "value": "ax_get_salesorder" },
+            { "name": "arguments", "value": "={{ JSON.stringify({ salesId: $json.body.salesId, includeLines: true }) }}" }
+          ]
+        }
+      },
+      "id": "get-order",
+      "name": "Get Order Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mcp-server:8080/tools/call",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "tool", "value": "ax_reserve_salesline" },
+            { "name": "arguments", "value": "={{ JSON.stringify({ salesId: $('Get Order Details').item.json.data.salesId, lineNum: $json.lineNum }) }}" }
+          ]
+        }
+      },
+      "id": "reserve-line",
+      "name": "Reserve Inventory",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [{ "value1": "={{ $json.data.fullyReserved }}", "value2": true }]
+        }
+      },
+      "id": "all-reserved",
+      "name": "All Reserved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mcp-server:8080/tools/call",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "tool", "value": "ax_post_shipment" },
+            { "name": "arguments", "value": "={{ JSON.stringify({ salesId: $('Get Order Details').item.json.data.salesId }) }}" }
+          ]
+        }
+      },
+      "id": "post-shipment",
+      "name": "Post Shipment",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://mcp-server:8080/tools/call",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "tool", "value": "ax_create_invoice" },
+            { "name": "arguments", "value": "={{ JSON.stringify({ salesId: $('Get Order Details').item.json.data.salesId, postImmediately: true }) }}" }
+          ]
+        }
+      },
+      "id": "create-invoice",
+      "name": "Create Invoice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1450, 200]
+    },
+    {
+      "parameters": {
+        "channel": "#warehouse",
+        "text": "📦 *Ready for Picking*\n\nOrder: {{ $('Get Order Details').item.json.data.salesId }}\nCustomer: {{ $('Get Order Details').item.json.data.customerName }}\nPacking Slip: {{ $json.data.packingSlipId }}\n\nAll items reserved and ready for shipment."
+      },
+      "id": "notify-warehouse",
+      "name": "Notify Warehouse",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1650, 200]
+    },
+    {
+      "parameters": {
+        "channel": "#sales",
+        "text": "⚠️ *Partial Reservation*\n\nOrder: {{ $('Get Order Details').item.json.data.salesId }}\nCustomer: {{ $('Get Order Details').item.json.data.customerName }}\n\nSome items could not be fully reserved. Please review and contact customer."
+      },
+      "id": "notify-partial",
+      "name": "Notify Partial",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2,
+      "position": [1250, 400]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data.lines",
+        "options": {}
+      },
+      "id": "split-lines",
+      "name": "Split Lines",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ success: true, salesId: $('Get Order Details').item.json.data.salesId, invoiceId: $json.data.invoiceId }) }}"
+      },
+      "id": "respond-success",
+      "name": "Respond Success",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1850, 200]
+    }
+  ],
+  "connections": {
+    "Order Confirmed Webhook": { "main": [[{ "node": "Get Order Details", "type": "main", "index": 0 }]] },
+    "Get Order Details": { "main": [[{ "node": "Split Lines", "type": "main", "index": 0 }]] },
+    "Split Lines": { "main": [[{ "node": "Reserve Inventory", "type": "main", "index": 0 }]] },
+    "Reserve Inventory": { "main": [[{ "node": "All Reserved?", "type": "main", "index": 0 }]] },
+    "All Reserved?": {
+      "main": [
+        [{ "node": "Post Shipment", "type": "main", "index": 0 }],
+        [{ "node": "Notify Partial", "type": "main", "index": 0 }]
+      ]
+    },
+    "Post Shipment": { "main": [[{ "node": "Create Invoice", "type": "main", "index": 0 }]] },
+    "Create Invoice": { "main": [[{ "node": "Notify Warehouse", "type": "main", "index": 0 }]] },
+    "Notify Warehouse": { "main": [[{ "node": "Respond Success", "type": "main", "index": 0 }]] }
+  },
+  "settings": { "executionOrder": "v1" },
+  "tags": ["ax2012", "fulfillment", "warehouse"]
+}

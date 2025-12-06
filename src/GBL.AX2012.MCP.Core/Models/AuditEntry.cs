@@ -20,8 +20,11 @@ public class AuditQuery
     public string? ToolName { get; set; }
     public DateTime? DateFrom { get; set; }
     public DateTime? DateTo { get; set; }
+    public DateTime? FromDate { get; set; }
+    public DateTime? ToDate { get; set; }
     public bool? Success { get; set; }
     public string? CorrelationId { get; set; }
     public int Skip { get; set; } = 0;
     public int Take { get; set; } = 50;
+    public int MaxResults { get; set; } = 100;
 }
