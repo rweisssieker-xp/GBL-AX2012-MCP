@@ -1,9 +1,10 @@
 ---
-stepsCompleted: [1, 2, 3, 4]
+stepsCompleted: [1, 2, 3, 4, 5, 6]
 inputDocuments:
   - "docs/analysis/brainstorming-session-2025-12-06.md"
 workflowType: "product-brief"
-lastStep: 2
+lastStep: 6
+status: "COMPLETED"
 project_name: "GBL-AX2012-MCP"
 user_name: "Reinerw"
 date: "2025-12-06"
@@ -685,3 +686,217 @@ Warum verbringt Stefan 60% mit Dateneingabe?
 | "Lines of Code" | Complexity ≠ quality | Test Coverage |
 | "Features Shipped" | Features ≠ outcomes | User Success Rate |
 | "Uptime 100%" | Unrealistic, drives wrong behavior | 99.5% with fast recovery |
+
+---
+
+## MVP Scope
+
+### Core Features (P0 — Must Have for Launch)
+
+#### 6 Essential Tools
+
+| # | Tool | Category | User Value | Complexity |
+|---|------|----------|------------|------------|
+| 1 | `ax_health_check` | System | IT kann Verfügbarkeit prüfen | Low |
+| 2 | `ax_get_customer` | Read | Kundeninfo sofort abrufbar | Low |
+| 3 | `ax_get_salesorder` | Read | Auftragsstatus in Sekunden | Low |
+| 4 | `ax_check_inventory` | Read | Bestandsprüfung ohne AX-Client | Low |
+| 5 | `ax_simulate_price` | Read | Preisanfrage ohne Klicken | Medium |
+| 6 | `ax_create_salesorder` | Write | Der Game-Changer — Auftrag per Chat | High |
+
+#### Infrastructure (P0)
+
+| Component | Description | Why Essential |
+|-----------|-------------|---------------|
+| **MCP Server Core** | .NET 8 Server mit MCP Protocol | Basis für alles |
+| **AX Connector** | Business Connector .NET Integration | Kommunikation mit AX |
+| **Role-Based Access** | 3 Rollen (Read, Write, Admin) | Security Baseline |
+| **Audit Logging** | Jede Operation wird geloggt | Compliance + Debugging |
+| **Circuit Breaker** | Schutz vor AX-Überlastung | Resilience |
+| **Health Endpoint** | `/health` für Monitoring | Operations |
+
+#### MVP User Journeys
+
+| Persona | MVP Journey | Tools Used |
+|---------|-------------|------------|
+| Stefan (Vertrieb) | Auftrag per Chat anlegen | `ax_get_customer`, `ax_simulate_price`, `ax_create_salesorder` |
+| Lisa (Customer Service) | Auftragsstatus abfragen | `ax_get_customer`, `ax_get_salesorder` |
+| Markus (IT) | Health Check + Logs prüfen | `ax_health_check`, Audit Dashboard |
+
+---
+
+### Out of Scope for MVP
+
+#### Deferred to Phase 2 (Month 4-6)
+
+| Feature | Why Deferred | When |
+|---------|--------------|------|
+| `ax_update_salesorder` | Komplexer als Create | Phase 2 |
+| `ax_create_customer` | Braucht Multi-Step Workflow | Phase 2 |
+| `ax_reserve_salesline` | Abhängig von SCM-Prozessen | Phase 2 |
+| `ax_check_credit` | Finance-Approval nötig | Phase 2 |
+| Automatic Reservations | Prozess-Änderung im Lager | Phase 2 |
+| n8n Integration | Erst wenn Basis stabil | Phase 2 |
+
+#### Deferred to Phase 3 (Month 7-9)
+
+| Feature | Why Deferred | When |
+|---------|--------------|------|
+| `ax_post_invoice` | Hohes Risiko, braucht Testing | Phase 3 |
+| `ax_post_packingslip` | Lager-Prozess-Änderung | Phase 3 |
+| Full O2C Automation | Schrittweise aufbauen | Phase 3 |
+| AI-Agent Autonomous Mode | Erst nach Human-in-Loop Erfahrung | Phase 3 |
+
+#### Explicitly NOT in Scope
+
+| Feature | Why Not | Alternative |
+|---------|---------|-------------|
+| Purchase Order Management | Anderer Prozess | Separates Projekt |
+| Production Orders | Manufacturing ist komplex | Separates Projekt |
+| Financial Posting (GL) | Zu riskant für MCP | Bleibt im AX-Client |
+| User Management in MCP | AX-Rollen nutzen | AD/AX Integration |
+| Custom Reports | AX SSRS nutzen | Bestehende Infrastruktur |
+| Real-time Dashboards | Overkill für MVP | Phase 4+ |
+
+---
+
+### MVP Success Criteria
+
+#### Go/No-Go Gates
+
+| Gate | Metric | Target | Decision |
+|------|--------|--------|----------|
+| **Technical Readiness** | All 6 P0 Tools functional | 100% Pass | Go to Pilot |
+| **Security Validation** | Penetration Test passed | 0 Critical | Go to Pilot |
+| **Performance Baseline** | Read <500ms, Write <2s | p95 | Go to Pilot |
+| **Pilot Success** | 5 Power Users active for 2 weeks | >80% Adoption | Go to Rollout |
+| **Error Rate** | Production errors | <5% | Continue Rollout |
+| **User Satisfaction** | Pilot User Feedback | >4/5 Rating | Continue Rollout |
+
+#### MVP Validation Questions
+
+| Question | Success Signal | Failure Signal |
+|----------|----------------|----------------|
+| "Löst es das Kernproblem?" | Stefan spart >50% Zeit bei Auftragserfassung | Stefan nutzt weiter AX-Client |
+| "Ist es stabil genug?" | <1 Incident/Woche | Tägliche Probleme |
+| "Ist es sicher?" | 0 Security Incidents | Jeder Incident |
+| "Skaliert es?" | 10 User gleichzeitig ohne Probleme | Performance-Degradation |
+
+#### Decision Points
+
+```
+MVP Launch (Month 3)
+        │
+        ▼
+   ┌─────────┐
+   │ Pilot   │ ← 5 Power Users, 2 Wochen
+   │ Success?│
+   └────┬────┘
+        │
+   Yes  │  No
+   ▼    │  ▼
+┌──────┐│┌──────────┐
+│Rollout││ Fix Issues│
+│Phase 2││ Re-Pilot  │
+└──────┘│└──────────┘
+```
+
+---
+
+### Future Vision
+
+#### Phase 2: Order Management (Month 4-6)
+
+| Capability | Tools | User Value |
+|------------|-------|------------|
+| Order Updates | `ax_update_salesorder`, `ax_add_salesline` | Änderungen ohne AX-Client |
+| Customer Management | `ax_create_customer`, `ax_update_customer` | Schnelle Kundenanlage |
+| Inventory Reservation | `ax_reserve_salesline` | Automatische Reservierung |
+| Credit Management | `ax_check_credit`, `ax_update_credit_limit` | Proaktive Kreditprüfung |
+| n8n Integration | Workflow Orchestration | Erste Automationen |
+
+#### Phase 3: Fulfillment (Month 7-9)
+
+| Capability | Tools | User Value |
+|------------|-------|------------|
+| Picking Release | `ax_release_for_picking` | SCM-Automation |
+| Packing Slip | `ax_post_packingslip` | Lieferschein-Automation |
+| Shipping | `ax_create_shipment` | Versand-Integration |
+| Invoice | `ax_post_invoice` | Rechnungs-Automation |
+| AI-Agent Mode | Autonomous Processing | 24/7 Automation |
+
+#### Phase 4: Full O2C + Advanced (Month 10-12)
+
+| Capability | Tools | User Value |
+|------------|-------|------------|
+| Payment Processing | `ax_post_payment` | Cash Application |
+| Returns Management | `ax_create_return_order` | Retouren-Automation |
+| Analytics | `ax_get_sales_analytics` | Business Intelligence |
+| Forecasting | `ax_get_availability_forecast` | Demand Planning |
+| Multi-Company | Cross-Company Operations | Enterprise Scale |
+
+#### 2-3 Year Vision
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    GBL-AX2012-MCP EVOLUTION                          │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  YEAR 1                YEAR 2                YEAR 3                  │
+│  ┌─────────┐          ┌─────────┐          ┌─────────┐              │
+│  │ O2C     │    →     │ P2P     │    →     │ Full    │              │
+│  │ Complete│          │ + Mfg   │          │ ERP     │              │
+│  └─────────┘          └─────────┘          └─────────┘              │
+│       │                    │                    │                    │
+│       ▼                    ▼                    ▼                    │
+│  AI-Assisted          AI-Autonomous        AI-Native                │
+│  Human-in-Loop        Exception-Only       Self-Healing             │
+│                                                                      │
+│  ┌─────────────────────────────────────────────────────────────────┐│
+│  │                    D365 MIGRATION PATH                          ││
+│  │  MCP Interface abstrahiert → Gleiche Tools, neues Backend       ││
+│  └─────────────────────────────────────────────────────────────────┘│
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+#### Platform Evolution
+
+| Horizon | Capability | Impact |
+|---------|------------|--------|
+| **H1 (Now)** | O2C Automation | 2h/day saved per user |
+| **H2 (Year 2)** | Full ERP Coverage | IT-Entlastung 70% |
+| **H3 (Year 3)** | AI-Native Operations | Autonomous Enterprise |
+
+#### D365 Migration Readiness
+
+**Key Principle:** MCP Interface ist die Abstraktionsschicht
+
+```
+TODAY                           FUTURE
+┌─────────┐                    ┌─────────┐
+│ MCP     │                    │ MCP     │
+│ Server  │                    │ Server  │
+└────┬────┘                    └────┬────┘
+     │                              │
+     ▼                              ▼
+┌─────────┐                    ┌─────────┐
+│ AX 2012 │      SWAP →        │ D365    │
+│ Adapter │                    │ Adapter │
+└─────────┘                    └─────────┘
+```
+
+**Migration Benefits:**
+- Gleiche MCP Tools, gleiche User Experience
+- Kein Re-Training für User
+- Kein Re-Build für n8n Flows
+- Schrittweise Migration möglich
+
+---
+
+## Document Completion
+
+**Status:** ✅ COMPLETE  
+**Completed:** 2025-12-06  
+**Author:** Reinerw  
+**Workflow:** product-brief (Steps 1-6)
