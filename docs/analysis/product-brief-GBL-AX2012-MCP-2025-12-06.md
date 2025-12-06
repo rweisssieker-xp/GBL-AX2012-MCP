@@ -1,5 +1,5 @@
 ---
-stepsCompleted: [1, 2]
+stepsCompleted: [1, 2, 3, 4]
 inputDocuments:
   - "docs/analysis/brainstorming-session-2025-12-06.md"
 workflowType: "product-brief"
@@ -254,3 +254,434 @@ Trigger (E-Mail/Webshop/EDI/Chat/Voice)
 │  └─────────────────────────────────────────────────────────────────┘│
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Target Users
+
+### Primary Users
+
+#### 👔 Persona 1: Stefan — Vertriebsmitarbeiter
+
+**Kontext:**
+- 38 Jahre, 8 Jahre im Unternehmen
+- Bearbeitet 30-50 Aufträge pro Tag
+- Arbeitet hauptsächlich im AX-Client und Outlook
+
+**Problem Experience:**
+- Verbringt 60% seiner Zeit mit Dateneingabe statt Kundenbetreuung
+- Copy-Paste zwischen E-Mail und AX ist fehleranfällig
+- Kunden warten auf Auftragsbestätigungen während er tippt
+- Preisanfragen erfordern 5+ Klicks im AX-Client
+- **Deep Pain:** Sonderpreise/Kundenkonditionen werden bei manueller Eingabe vergessen
+
+**Ziele:**
+- Schnellere Auftragserfassung
+- Mehr Zeit für Kundenbeziehungen
+- Weniger Tippfehler bei Bestellungen
+
+**Interaktion mit MCP:**
+- Primär über Chat/Conversational Interface
+- "Leg Auftrag für Müller an, 50 Stück Widget Pro, Standardpreis"
+- Bekommt sofortige Bestätigung mit SalesId
+
+**Success Moment:**
+> "Ich hab den Auftrag in 10 Sekunden statt 5 Minuten erfasst — und der Kunde hat die Bestätigung schon!"
+
+---
+
+#### 📞 Persona 2: Lisa — Customer Service Mitarbeiterin
+
+**Kontext:**
+- 29 Jahre, 3 Jahre im Unternehmen
+- Bearbeitet Nachbestellungen, Retouren, Statusanfragen
+- Telefon + E-Mail als Hauptkanäle
+
+**Problem Experience:**
+- Muss während Telefonat im AX suchen — Kunde wartet
+- Häufige Fragen: "Wo ist meine Bestellung?" "Kann ich noch was hinzufügen?"
+- Retouren-Prozess ist komplex und fehleranfällig
+- **Deep Pain:** Keine Prognose-Fähigkeit ("Wann ist Artikel wieder da?")
+
+**Ziele:**
+- Sofortige Antworten während Kundengespräch
+- Einfache Auftragsänderungen
+- Weniger Rückrufe wegen fehlender Infos
+
+**Interaktion mit MCP:**
+- Voice-to-Text während Telefonat (mit Confidence Score + Live-Preview)
+- "Zeig mir alle offenen Aufträge für Kunde Schmidt"
+- "Füge 10 Stück Artikel ABC zur Bestellung 12345 hinzu"
+
+**Success Moment:**
+> "Der Kunde hat aufgelegt und alles war erledigt — kein Rückruf nötig!"
+
+---
+
+#### 📦 Persona 3: Thomas — SCM / Lager-Disponent
+
+**Kontext:**
+- 45 Jahre, 15 Jahre im Unternehmen
+- Verantwortlich für Reservierungen und Bestandsmanagement
+- Arbeitet mit Lagerteam und Vertrieb
+
+**Problem Experience:**
+- Reservierungskonflikte zwischen Aufträgen
+- Manuelle Lagerumbuchungen sind zeitaufwändig
+- Bestandsabfragen erfordern mehrere Reports
+- **Deep Pain:** Priorisierungs-Chaos bei Teillieferungen — wer bekommt was zuerst?
+
+**Ziele:**
+- Automatische Reservierung bei Auftragseingang
+- Echtzeit-Bestandsübersicht
+- Weniger manuelle Korrekturen
+- Klare Priorisierungsregeln
+
+**Interaktion mit MCP:**
+- Automatisierte Flows via n8n
+- Alerts bei Bestandsengpässen
+- "Reserviere alle offenen Positionen für Auftrag 12345"
+- Priority-Parameter für Reservierungen
+
+**Success Moment:**
+> "Die Reservierungen laufen automatisch — ich kümmere mich nur noch um Ausnahmen!"
+
+---
+
+#### 💰 Persona 4: Claudia — Debitorenbuchhalterin
+
+**Kontext:**
+- 52 Jahre, 20 Jahre im Unternehmen
+- Verantwortlich für Mahnwesen, Kundenanlage, Kreditlimits
+- Arbeitet eng mit Vertrieb zusammen
+
+**Problem Experience:**
+- Kundenanlage ist ein 15-Minuten-Prozess
+- Mahnläufe erfordern manuelle Vorbereitung
+- Kreditlimit-Prüfungen verzögern Aufträge
+- **Deep Pain:** Externe Validierungen (USt-ID, Kreditauskunft) sind nicht integriert
+
+**Ziele:**
+- Schnellere Kundenanlage (Multi-Step mit Validierungen)
+- Automatisierte Mahnvorbereitung
+- Proaktive Kreditwarnungen
+
+**Interaktion mit MCP:**
+- Approval-Workflow für neue Kunden
+- "Leg Kunde Müller GmbH an mit Standardkonditionen"
+- Automatische Alerts bei Kreditüberschreitung
+- Finance Approval Queue für Großaufträge
+
+**Success Moment:**
+> "Neuer Kunde ist in 2 Minuten angelegt — früher war das ein halber Tag!"
+
+---
+
+### Secondary Users
+
+#### 🔧 Persona 5: Markus — IT-Administrator / AX-Admin
+
+**Kontext:**
+- 35 Jahre, 5 Jahre im Unternehmen
+- Verantwortlich für AX-Betrieb und Integrationen
+- Einziger mit tiefem AX-Wissen
+
+**Problem Experience:**
+- Jede Integration ist ein Projekt
+- Keine Standard-API für externe Systeme
+- Troubleshooting ohne Logs ist Blindflug
+- **Deep Pain:** Keine Zeit für Log-Analyse — braucht Dashboards, nicht Rohdaten
+
+**Ziele:**
+- Standardisierte Integration für alle Systeme
+- Vollständige Audit-Logs mit Dashboard + Anomalie-Alerts
+- Health Monitoring ohne AX-Client
+
+**Interaktion mit MCP:**
+- Admin-Dashboard für Health/Logs/Anomalien
+- `ax_health_check` für Monitoring
+- Konfiguration von Rollen und Berechtigungen
+
+**Success Moment:**
+> "Neue Integration? Ich geb denen MCP-Zugang und fertig — kein Custom Code!"
+
+**Key Insight:** MCP ist IT-Entlastung. Einmal bauen, alle profitieren.
+
+---
+
+#### 🤖 Persona 6: AI-Agent (Autonomous)
+
+**Kontext:**
+- Kein Mensch — autonomer Prozess
+- Verarbeitet E-Mails, Webshop-Orders, EDI-Nachrichten
+- Läuft 24/7 ohne menschliche Interaktion
+
+**Problem Experience:**
+- Kann nicht mit AX kommunizieren
+- Jede Aktion erfordert menschliche Vermittlung
+- Keine Möglichkeit zur Selbstkorrektur
+- **Deep Pain:** Unklare Escalation-Mechanik — WIE wird ein Human benachrichtigt?
+
+**Ziele:**
+- Direkte AX-Operationen ohne Human-in-Loop
+- Validierung vor Ausführung (Fuzzy Match Confirmation)
+- Graceful Escalation mit definierten Kanälen (Teams, E-Mail, Ticket) + SLA
+
+**Interaktion mit MCP:**
+- Vollautomatische Tool-Chains
+- E-Mail → Parse → Validate → Create Order → Confirm
+- Escalation an Human nur bei Exceptions
+
+**Success Moment:**
+> "100 Orders über Nacht verarbeitet — 0 Fehler, 0 menschliche Eingriffe!"
+
+---
+
+### User Journey
+
+#### Discovery → Onboarding → Core Usage → Success
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  DISCOVERY  │ →  │  ONBOARDING │ →  │ CORE USAGE  │ →  │   SUCCESS   │
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+      │                  │                  │                  │
+      ▼                  ▼                  ▼                  ▼
+ IT zeigt Demo      Rolle zuweisen     Daily Operations   Messbare KPIs
+ "Das geht?"        Erste Commands     Conversational     Zeit gespart
+ Pilot-User         Cheat Sheet        Automation         Fehler reduziert
+```
+
+**Stefan's Journey (Vertrieb):**
+1. **Discovery:** IT zeigt Demo — "Auftrag per Chat? Das geht?"
+2. **Onboarding:** Bekommt MCP_Sales_Write Rolle, 10-Minuten-Intro, Cheat Sheet
+3. **First Win:** Erster Auftrag in 15 Sekunden statt 5 Minuten
+4. **Core Usage:** 80% der Aufträge über Chat, nur Sonderfälle im AX-Client
+5. **Success:** 2 Stunden/Tag gespart, Kundenzufriedenheit gestiegen
+
+**AI-Agent Journey:**
+1. **Discovery:** IT evaluiert MCP für E-Mail-Automation
+2. **Onboarding:** n8n Flow konfiguriert, Test mit 10 E-Mails in Sandbox
+3. **First Win:** Erste automatische Order ohne Fehler
+4. **Core Usage:** 24/7 Verarbeitung aller Kanäle
+5. **Success:** 95% Automation Rate, <2% Escalation
+
+---
+
+### Cross-Functional Scenario: Großauftrag mit Kreditrisiko
+
+**Situation:** Neukunde bestellt für €150.000. Kreditlimit ist €100.000.
+
+**Lösung: Conditional Order Release**
+
+```
+IF Kreditlimit überschritten:
+  1. Auftrag splitten in "unter Limit" + "über Limit"
+  2. Teil 1: Sofort freigeben → SCM kann kommissionieren
+  3. Teil 2: Warten auf Anzahlung/Freigabe Finance
+  4. SCM bekommt klare Freigabe-Signale
+```
+
+| Rolle | Aktion | MCP Tool |
+|-------|--------|----------|
+| Stefan (Vertrieb) | Auftrag anlegen | `ax_create_salesorder` |
+| System | Kreditprüfung | `ax_check_credit` |
+| System | Auto-Split | `ax_split_order_by_credit` |
+| Claudia (Finance) | Approval Queue | Dashboard |
+| Thomas (SCM) | Freigabe-Signal | `ax_release_for_picking` |
+
+---
+
+## Additional Tools Identified
+
+### From User Research
+
+| Tool | Description | Priority |
+|------|-------------|----------|
+| `ax_check_availability_forecast` | Wann ist Artikel wieder verfügbar? | P1 |
+| `ax_update_delivery_date` | Liefertermin ändern | P1 |
+| `ax_send_order_confirmation` | Bestätigung per E-Mail senden | P2 |
+| `ax_get_reservation_queue` | Wer wartet noch auf diesen Artikel? | P2 |
+| `ax_split_order_by_credit` | Auftrag bei Kreditüberschreitung splitten | P2 |
+| `ax_release_for_picking` | Freigabe-Signal an Lager | P2 |
+
+---
+
+## Risk Mitigations (Enhanced from Pre-mortem)
+
+| Risk | Likelihood | Impact | Mitigation |
+|------|------------|--------|------------|
+| Security Incident (Test in Prod) | MEDIUM | CRITICAL | Sandbox/Prod Trennung technisch enforced |
+| AX Performance Degradation | HIGH | HIGH | Load Testing vor Go-Live, dedizierter AOS |
+| User Rejection | HIGH | HIGH | Pilot mit Power Usern, Cheat Sheet, Feedback-Loop |
+| Data Quality (Kundenverwechslung) | MEDIUM | HIGH | Fuzzy Match Confirmation |
+| Scope Creep | HIGH | MEDIUM | Strict MVP (6 Tools), Phased Rollout |
+
+---
+
+## Additional USP
+
+### USP #18: IT-Entlastung
+
+**Root Cause Analysis (5 Whys):**
+```
+Warum verbringt Stefan 60% mit Dateneingabe?
+→ Weil jede Bestellung manuell erfasst werden muss
+→ Weil keine automatische Schnittstelle existiert
+→ Weil AX 2012 keine moderne API hat
+→ Weil Custom Development teuer ist und IT-Ressourcen knapp
+→ Weil IT mit Maintenance beschäftigt ist
+```
+
+**Insight:** MCP ist nicht nur ein Tool für User — es ist eine **IT-Entlastung**.
+
+**Elevator Pitch:**
+> "Einmal bauen, alle profitieren. MCP ist die API-Schicht die IT seit Jahren braucht — ohne Custom Development für jeden Use Case."
+
+---
+
+## Success Metrics
+
+### User Success Metrics
+
+| Persona | Success Metric | Target | Measurement |
+|---------|---------------|--------|-------------|
+| **Stefan (Vertrieb)** | Zeit pro Auftragserfassung | <30 Sekunden (vs. 5 Min heute) | Timer in MCP |
+| **Stefan** | Aufträge über MCP vs. AX-Client | >80% über MCP | Usage Analytics |
+| **Lisa (Customer Service)** | First-Call-Resolution Rate | >90% | CRM Tracking |
+| **Lisa** | Rückruf-Quote | <10% (vs. 40% heute) | Call Logs |
+| **Thomas (SCM)** | Manuelle Reservierungs-Eingriffe | <5% aller Orders | Exception Log |
+| **Thomas** | Reservierungs-Konflikte | -80% vs. Baseline | AX Reports |
+| **Claudia (Finance)** | Zeit für Kundenanlage | <5 Min (vs. 15 Min heute) | Process Timer |
+| **Claudia** | Kreditüberschreitungs-Incidents | -50% | Finance Reports |
+| **Markus (IT)** | Integration-Requests an IT | -70% | Ticket System |
+| **Markus** | Mean Time to Detect Issues | <5 Min | Monitoring |
+| **AI-Agent** | Automation Rate | >95% ohne Human | Audit Log |
+| **AI-Agent** | Escalation Rate | <5% | Escalation Queue |
+
+### User Success Moments
+
+| Persona | "Aha!" Moment |
+|---------|---------------|
+| Stefan | "Ich hab den Auftrag in 10 Sekunden erfasst — und der Kunde hat die Bestätigung schon!" |
+| Lisa | "Der Kunde hat aufgelegt und alles war erledigt — kein Rückruf nötig!" |
+| Thomas | "Die Reservierungen laufen automatisch — ich kümmere mich nur noch um Ausnahmen!" |
+| Claudia | "Neuer Kunde ist in 2 Minuten angelegt — früher war das ein halber Tag!" |
+| Markus | "Neue Integration? Ich geb denen MCP-Zugang und fertig — kein Custom Code!" |
+| AI-Agent | "100 Orders über Nacht verarbeitet — 0 Fehler, 0 menschliche Eingriffe!" |
+
+---
+
+### Business Objectives
+
+#### 3-Monats-Ziele (MVP Launch)
+
+| Objective | Target | Measurement |
+|-----------|--------|-------------|
+| MCP Server live in Production | ✅ Deployed | Deployment Status |
+| 6 P0-Tools funktional | 100% | Test Suite |
+| Pilot-User aktiv | 5 Power User | Usage Analytics |
+| Zero Security Incidents | 0 | Incident Log |
+| AX Performance unbeeinträchtigt | <5% Degradation | AOS Monitoring |
+
+#### 6-Monats-Ziele (Rollout)
+
+| Objective | Target | Measurement |
+|-----------|--------|-------------|
+| User Adoption Vertrieb | >50% der Vertriebler | Usage Analytics |
+| Order Capture Automation | >30% aller Orders | Audit Log |
+| Time Savings Vertrieb | 2h/Tag/Person | Process Comparison |
+| Error Rate Reduction | -50% vs. Baseline | Quality Reports |
+| IT Integration Requests | -50% | Ticket System |
+
+#### 12-Monats-Ziele (Full O2C)
+
+| Objective | Target | Measurement |
+|-----------|--------|-------------|
+| Full O2C Coverage | Alle 4 Phasen live | Feature Tracking |
+| End-to-End Automation Rate | >60% | Audit Log |
+| Cost Savings | €X/Jahr (TBD) | Finance Analysis |
+| Customer Satisfaction | +10 NPS | Survey |
+| D365 Migration Ready | Interface abstrahiert | Architecture Review |
+
+---
+
+### Key Performance Indicators (KPIs)
+
+#### Technical KPIs
+
+| KPI | Target | Measurement | Alert Threshold |
+|-----|--------|-------------|-----------------|
+| **Availability** | 99.5% | Uptime Monitoring | <99% |
+| **Read Latency (p95)** | <500ms | APM | >1s |
+| **Write Latency (p95)** | <2s | APM | >5s |
+| **Error Rate** | <2% | Audit Log | >5% |
+| **Circuit Breaker Trips** | <1/day | Health Monitor | >3/day |
+
+#### Operational KPIs
+
+| KPI | Target | Measurement | Alert Threshold |
+|-----|--------|-------------|-----------------|
+| **Daily Active Users** | >20 | Usage Analytics | <10 |
+| **Orders via MCP** | >100/day | Audit Log | <50 |
+| **Escalation Rate** | <5% | Escalation Queue | >10% |
+| **Human Approval Time** | <30 min | Workflow Timer | >2h |
+| **Audit Log Completeness** | 100% | Log Validation | <100% |
+
+#### Business KPIs
+
+| KPI | Target | Measurement | Alert Threshold |
+|-----|--------|-------------|-----------------|
+| **Time Saved (Vertrieb)** | 2h/day/person | Process Timer | <1h |
+| **Order Error Rate** | <1% | Quality Reports | >3% |
+| **Customer Response Time** | <2 min | CRM | >5 min |
+| **IT Ticket Reduction** | -70% | Ticket System | <-30% |
+
+---
+
+### Success Metrics Dashboard
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    GBL-AX2012-MCP DASHBOARD                          │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  HEALTH          USAGE           PERFORMANCE      BUSINESS           │
+│  ┌─────────┐    ┌─────────┐    ┌─────────┐      ┌─────────┐         │
+│  │ 99.7%   │    │ 127     │    │ 320ms   │      │ 2.1h    │         │
+│  │ Uptime  │    │ Orders  │    │ Latency │      │ Saved   │         │
+│  │ ✅      │    │ Today   │    │ ✅      │      │ /Person │         │
+│  └─────────┘    └─────────┘    └─────────┘      └─────────┘         │
+│                                                                      │
+│  AUTOMATION      ERRORS          ESCALATIONS     ADOPTION            │
+│  ┌─────────┐    ┌─────────┐    ┌─────────┐      ┌─────────┐         │
+│  │ 94.2%   │    │ 1.3%    │    │ 3.8%    │      │ 67%     │         │
+│  │ Auto    │    │ Rate    │    │ Rate    │      │ Users   │         │
+│  │ ✅      │    │ ✅      │    │ ✅      │      │ Active  │         │
+│  └─────────┘    └─────────┘    └─────────┘      └─────────┘         │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Metrics-to-Strategy Alignment
+
+| Product Vision | User Metric | Business Metric | KPI |
+|----------------|-------------|-----------------|-----|
+| "Manuelle Prozesse automatisieren" | Automation Rate >95% | Time Saved 2h/day | Orders via MCP |
+| "AI-gestützte Automatisierung" | Escalation Rate <5% | Error Rate -50% | Escalation Queue |
+| "Sichere Bereitstellung" | Zero Security Incidents | Audit Completeness 100% | Availability 99.5% |
+| "Full O2C Coverage" | All Personas active | All 4 Phases live | Feature Coverage |
+| "IT-Entlastung" | IT Tickets -70% | Integration Requests -70% | Ticket Reduction |
+
+---
+
+### Anti-Metrics (What NOT to Optimize)
+
+| Anti-Metric | Why Not | Better Alternative |
+|-------------|---------|-------------------|
+| "Number of Tools" | More tools ≠ more value | Tool Usage Rate |
+| "Lines of Code" | Complexity ≠ quality | Test Coverage |
+| "Features Shipped" | Features ≠ outcomes | User Success Rate |
+| "Uptime 100%" | Unrealistic, drives wrong behavior | 99.5% with fast recovery |
