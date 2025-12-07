@@ -167,6 +167,68 @@ public class AifClient : IAifClient
         }, cancellationToken);
     }
     
+    public async Task<IEnumerable<ReservationQueueEntry>> GetReservationQueueAsync(
+        string itemId, 
+        string? warehouseId = null, 
+        CancellationToken cancellationToken = default)
+    {
+        return await _circuitBreaker.ExecuteAsync(async () =>
+        {
+            var warehouseCriteria = warehouseId != null 
+                ? $"<InventDimId>{warehouseId}</InventDimId>" 
+                : "";
+            
+            var soapRequest = $@"<?xml version=""1.0"" encoding=""utf-8""?>
+<soap:Envelope xmlns:soap=""{SoapNamespace}"" xmlns:gbl=""http://gbl.com/ax2012/services"">
+    <soap:Body>
+        <gbl:getReservationQueue>
+            <gbl:itemId>{itemId}</gbl:itemId>
+            {warehouseCriteria}
+        </gbl:getReservationQueue>
+    </soap:Body>
+</soap:Envelope>";
+            
+            var response = await SendSoapRequestAsync("GBL_InventoryService", soapRequest, cancellationToken);
+            return ParseReservationQueueResponse(response);
+        }, cancellationToken);
+    }
+    
+    private IEnumerable<ReservationQueueEntry> ParseReservationQueueResponse(string response)
+    {
+        var entries = new List<ReservationQueueEntry>();
+        
+        try
+        {
+            var doc = XDocument.Parse(response);
+            var ns = XNamespace.Get("http://gbl.com/ax2012/services");
+            
+            var queueEntries = doc.Descendants(ns + "ReservationQueueEntry");
+            
+            foreach (var entry in queueEntries)
+            {
+                entries.Add(new ReservationQueueEntry
+                {
+                    SalesId = entry.Element(ns + "SalesId")?.Value ?? "",
+                    LineNum = int.TryParse(entry.Element(ns + "LineNum")?.Value, out var ln) ? ln : 0,
+                    CustomerAccount = entry.Element(ns + "CustomerAccount")?.Value ?? "",
+                    CustomerName = entry.Element(ns + "CustomerName")?.Value ?? "",
+                    ItemId = entry.Element(ns + "ItemId")?.Value ?? "",
+                    ReservedQty = decimal.TryParse(entry.Element(ns + "ReservedQty")?.Value, out var rq) ? rq : 0,
+                    PendingQty = decimal.TryParse(entry.Element(ns + "PendingQty")?.Value, out var pq) ? pq : 0,
+                    RequestedDate = DateTime.TryParse(entry.Element(ns + "RequestedDate")?.Value, out var rd) ? rd : DateTime.MinValue,
+                    OrderDate = DateTime.TryParse(entry.Element(ns + "OrderDate")?.Value, out var od) ? od : DateTime.MinValue,
+                    Priority = int.TryParse(entry.Element(ns + "Priority")?.Value, out var p) ? p : 0
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to parse reservation queue response");
+        }
+        
+        return entries.OrderBy(e => e.Priority).ThenBy(e => e.OrderDate);
+    }
+    
     private string BuildFindRequest(string service, string criteria)
     {
         return $@"<?xml version=""1.0"" encoding=""utf-8""?>

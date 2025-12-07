@@ -155,4 +155,39 @@ public class MockAifClient : IAifClient
             ValidUntil = DateTime.Today.AddMonths(1)
         });
     }
+    
+    public Task<IEnumerable<ReservationQueueEntry>> GetReservationQueueAsync(string itemId, string? warehouseId = null, CancellationToken cancellationToken = default)
+    {
+        var entries = new List<ReservationQueueEntry>
+        {
+            new ReservationQueueEntry
+            {
+                SalesId = "SO-2024-001",
+                LineNum = 1,
+                CustomerAccount = "CUST-001",
+                CustomerName = "Müller GmbH",
+                ItemId = itemId,
+                ReservedQty = 50,
+                PendingQty = 0,
+                RequestedDate = DateTime.Today.AddDays(5),
+                OrderDate = DateTime.Today.AddDays(-10),
+                Priority = 1
+            },
+            new ReservationQueueEntry
+            {
+                SalesId = "SO-2024-002",
+                LineNum = 1,
+                CustomerAccount = "CUST-002",
+                CustomerName = "Schmidt AG",
+                ItemId = itemId,
+                ReservedQty = 0,
+                PendingQty = 100,
+                RequestedDate = DateTime.Today.AddDays(7),
+                OrderDate = DateTime.Today.AddDays(-5),
+                Priority = 2
+            }
+        };
+        
+        return Task.FromResult<IEnumerable<ReservationQueueEntry>>(entries);
+    }
 }

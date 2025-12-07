@@ -2,15 +2,15 @@
 title: GBL-AX2012-MCP API Reference
 description: Complete API documentation for all MCP tools
 author: Paige (Technical Writer)
-date: 2025-12-06
-version: 1.4.0
+date: 2025-12-07
+version: 1.5.0
 ---
 
 # GBL-AX2012-MCP API Reference
 
 ## Overview
 
-This document provides complete API documentation for all 26 tools available in the GBL-AX2012-MCP server.
+This document provides complete API documentation for all 29 tools available in the GBL-AX2012-MCP server.
 
 ### Transport Options
 
@@ -892,6 +892,125 @@ Emergency stop for all or specific tools.
 
 ---
 
+### P2 Features
+
+#### ax_send_order_confirmation
+
+Send order confirmation email to customer.
+
+**Input:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `salesId` | string | Yes | Sales order ID |
+| `emailOverride` | string | No | Override customer email |
+| `includePrices` | boolean | No | Include prices in email (default: true) |
+| `language` | string | No | Email language (e.g., "de-DE", "en-US") |
+
+**Output:**
+
+```json
+{
+  "success": true,
+  "salesId": "SO-2024-1234",
+  "sentTo": "customer@example.com",
+  "sentAt": "2024-12-06T10:30:00Z",
+  "message": "Order confirmation sent successfully"
+}
+```
+
+---
+
+#### ax_get_reservation_queue
+
+Get the reservation queue for an item - shows who is waiting for stock.
+
+**Input:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `itemId` | string | Yes | Item ID |
+| `warehouseId` | string | No | Filter by warehouse |
+| `maxResults` | integer | No | Max entries to return (default: 20, max: 100) |
+
+**Output:**
+
+```json
+{
+  "itemId": "ITEM-100",
+  "warehouseId": "WH-MAIN",
+  "totalEntries": 3,
+  "totalReservedQty": 150,
+  "totalPendingQty": 200,
+  "entries": [
+    {
+      "salesId": "SO-2024-001",
+      "lineNum": 1,
+      "customerAccount": "CUST-001",
+      "customerName": "Müller GmbH",
+      "reservedQty": 50,
+      "pendingQty": 0,
+      "requestedDate": "2024-12-10",
+      "orderDate": "2024-12-01",
+      "priority": 1
+    },
+    {
+      "salesId": "SO-2024-002",
+      "lineNum": 1,
+      "customerAccount": "CUST-002",
+      "customerName": "Schmidt AG",
+      "reservedQty": 0,
+      "pendingQty": 100,
+      "requestedDate": "2024-12-15",
+      "orderDate": "2024-12-03",
+      "priority": 2
+    }
+  ]
+}
+```
+
+---
+
+#### ax_split_order_by_credit
+
+Split a sales order when it exceeds credit limit - creates two orders: one within limit, one requiring approval.
+
+**Input:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `salesId` | string | Yes | Sales order ID |
+| `customerAccount` | string | Yes | Customer account |
+
+**Output:**
+
+```json
+{
+  "wasSplit": true,
+  "originalSalesId": "SO-2024-1234",
+  "newSalesId": "SO-2024-1235",
+  "originalOrderAmount": 150000.00,
+  "amountWithinLimit": 75000.00,
+  "amountExceedingLimit": 75000.00,
+  "creditLimit": 100000.00,
+  "currentBalance": 25000.00,
+  "availableCredit": 75000.00,
+  "splitLines": [
+    {
+      "originalLineNum": 1,
+      "newLineNum": 1,
+      "itemId": "ITEM-100",
+      "originalQty": 100,
+      "remainingQty": 50,
+      "splitQty": 50
+    }
+  ],
+  "message": "Order split successfully. SO-2024-1235 requires approval."
+}
+```
+
+---
+
 ## Error Codes
 
 | Code | HTTP Status | Description |
@@ -940,4 +1059,4 @@ Authorization: Negotiate <token>
 
 ---
 
-*Document Version: 1.4.0 | Last Updated: 2025-12-06*
+*Document Version: 1.5.0 | Last Updated: 2025-12-07*

@@ -182,6 +182,104 @@ public class WcfClient : IWcfClient, IDisposable
         }, cancellationToken);
     }
     
+    public async Task<bool> SendOrderConfirmationAsync(SendOrderConfirmationRequest request, CancellationToken cancellationToken = default)
+    {
+        return await _circuitBreaker.ExecuteAsync(async () =>
+        {
+            if (_channelFactory == null)
+            {
+                throw new AxException("WCF_NOT_CONFIGURED", "WCF client is not properly configured");
+            }
+            
+            var channel = _channelFactory.CreateChannel();
+            
+            try
+            {
+                _logger.LogDebug("Sending order confirmation for {SalesId}", request.SalesId);
+                
+                var wcfRequest = new WcfSendConfirmationRequest
+                {
+                    SalesId = request.SalesId,
+                    EmailOverride = request.EmailOverride,
+                    IncludePrices = request.IncludePrices,
+                    Language = request.Language ?? "en-us"
+                };
+                
+                var response = await channel.SendOrderConfirmationAsync(wcfRequest);
+                
+                if (!response.Success)
+                {
+                    _logger.LogError("Failed to send confirmation: {Code} - {Message}", response.ErrorCode, response.ErrorMessage);
+                    throw new AxException(response.ErrorCode ?? "AX_ERROR", response.ErrorMessage ?? "Unknown error");
+                }
+                
+                _logger.LogInformation("Sent order confirmation for {SalesId} to {Email}", request.SalesId, response.SentTo);
+                return true;
+            }
+            finally
+            {
+                CloseChannel(channel);
+            }
+        }, cancellationToken);
+    }
+    
+    public async Task<SplitOrderResult> SplitOrderByCreditAsync(SplitOrderRequest request, CancellationToken cancellationToken = default)
+    {
+        return await _circuitBreaker.ExecuteAsync(async () =>
+        {
+            if (_channelFactory == null)
+            {
+                throw new AxException("WCF_NOT_CONFIGURED", "WCF client is not properly configured");
+            }
+            
+            var channel = _channelFactory.CreateChannel();
+            
+            try
+            {
+                _logger.LogDebug("Splitting order {SalesId} by credit limit {CreditLimit}", request.SalesId, request.CreditLimit);
+                
+                var wcfRequest = new WcfSplitOrderRequest
+                {
+                    SalesId = request.SalesId,
+                    CreditLimit = request.CreditLimit,
+                    CurrentBalance = request.CurrentBalance
+                };
+                
+                var response = await channel.SplitOrderByCreditAsync(wcfRequest);
+                
+                if (!response.Success)
+                {
+                    _logger.LogError("Failed to split order: {Code} - {Message}", response.ErrorCode, response.ErrorMessage);
+                    throw new AxException(response.ErrorCode ?? "AX_ERROR", response.ErrorMessage ?? "Unknown error");
+                }
+                
+                _logger.LogInformation("Split order {SalesId} into {NewSalesId}", request.SalesId, response.NewSalesId);
+                
+                return new SplitOrderResult
+                {
+                    WasSplit = response.WasSplit,
+                    OriginalSalesId = request.SalesId,
+                    NewSalesId = response.NewSalesId,
+                    OriginalOrderAmount = response.OriginalOrderAmount,
+                    SplitAmount = response.SplitAmount,
+                    SplitLines = response.SplitLines?.Select(l => new SplitLineInfo
+                    {
+                        OriginalLineNum = l.OriginalLineNum,
+                        NewLineNum = l.NewLineNum,
+                        ItemId = l.ItemId,
+                        OriginalQty = l.OriginalQty,
+                        RemainingQty = l.RemainingQty,
+                        SplitQty = l.SplitQty
+                    }).ToList() ?? new List<SplitLineInfo>()
+                };
+            }
+            finally
+            {
+                CloseChannel(channel);
+            }
+        }, cancellationToken);
+    }
+    
     private void CloseChannel(IGblSalesOrderService channel)
     {
         try
@@ -219,6 +317,12 @@ public interface IGblSalesOrderService
     
     [OperationContract]
     Task<WcfAddSalesLineResponse> AddSalesLineAsync(WcfAddSalesLineRequest request);
+    
+    [OperationContract]
+    Task<WcfSendConfirmationResponse> SendOrderConfirmationAsync(WcfSendConfirmationRequest request);
+    
+    [OperationContract]
+    Task<WcfSplitOrderResponse> SplitOrderByCreditAsync(WcfSplitOrderRequest request);
 }
 
 // WCF Data Contracts
@@ -285,4 +389,54 @@ public class WcfAddSalesLineResponse
     [System.Runtime.Serialization.DataMember] public int LineNum { get; set; }
     [System.Runtime.Serialization.DataMember] public string? ErrorCode { get; set; }
     [System.Runtime.Serialization.DataMember] public string? ErrorMessage { get; set; }
+}
+
+[System.Runtime.Serialization.DataContract(Namespace = "http://gbl.com/ax2012/services")]
+public class WcfSendConfirmationRequest
+{
+    [System.Runtime.Serialization.DataMember] public string SalesId { get; set; } = "";
+    [System.Runtime.Serialization.DataMember] public string? EmailOverride { get; set; }
+    [System.Runtime.Serialization.DataMember] public bool IncludePrices { get; set; }
+    [System.Runtime.Serialization.DataMember] public string Language { get; set; } = "en-us";
+}
+
+[System.Runtime.Serialization.DataContract(Namespace = "http://gbl.com/ax2012/services")]
+public class WcfSendConfirmationResponse
+{
+    [System.Runtime.Serialization.DataMember] public bool Success { get; set; }
+    [System.Runtime.Serialization.DataMember] public string? SentTo { get; set; }
+    [System.Runtime.Serialization.DataMember] public string? ErrorCode { get; set; }
+    [System.Runtime.Serialization.DataMember] public string? ErrorMessage { get; set; }
+}
+
+[System.Runtime.Serialization.DataContract(Namespace = "http://gbl.com/ax2012/services")]
+public class WcfSplitOrderRequest
+{
+    [System.Runtime.Serialization.DataMember] public string SalesId { get; set; } = "";
+    [System.Runtime.Serialization.DataMember] public decimal CreditLimit { get; set; }
+    [System.Runtime.Serialization.DataMember] public decimal CurrentBalance { get; set; }
+}
+
+[System.Runtime.Serialization.DataContract(Namespace = "http://gbl.com/ax2012/services")]
+public class WcfSplitOrderResponse
+{
+    [System.Runtime.Serialization.DataMember] public bool Success { get; set; }
+    [System.Runtime.Serialization.DataMember] public bool WasSplit { get; set; }
+    [System.Runtime.Serialization.DataMember] public string? NewSalesId { get; set; }
+    [System.Runtime.Serialization.DataMember] public decimal OriginalOrderAmount { get; set; }
+    [System.Runtime.Serialization.DataMember] public decimal? SplitAmount { get; set; }
+    [System.Runtime.Serialization.DataMember] public WcfSplitLineInfo[]? SplitLines { get; set; }
+    [System.Runtime.Serialization.DataMember] public string? ErrorCode { get; set; }
+    [System.Runtime.Serialization.DataMember] public string? ErrorMessage { get; set; }
+}
+
+[System.Runtime.Serialization.DataContract(Namespace = "http://gbl.com/ax2012/services")]
+public class WcfSplitLineInfo
+{
+    [System.Runtime.Serialization.DataMember] public int OriginalLineNum { get; set; }
+    [System.Runtime.Serialization.DataMember] public int? NewLineNum { get; set; }
+    [System.Runtime.Serialization.DataMember] public string ItemId { get; set; } = "";
+    [System.Runtime.Serialization.DataMember] public decimal OriginalQty { get; set; }
+    [System.Runtime.Serialization.DataMember] public decimal RemainingQty { get; set; }
+    [System.Runtime.Serialization.DataMember] public decimal SplitQty { get; set; }
 }

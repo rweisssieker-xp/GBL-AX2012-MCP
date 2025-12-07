@@ -30,6 +30,35 @@ public class MockWcfClient : IWcfClient
         return Task.FromResult(10);
     }
     
+    public Task<bool> SendOrderConfirmationAsync(SendOrderConfirmationRequest request, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(true);
+    }
+    
+    public Task<SplitOrderResult> SplitOrderByCreditAsync(SplitOrderRequest request, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(new SplitOrderResult
+        {
+            WasSplit = true,
+            OriginalSalesId = request.SalesId,
+            NewSalesId = $"{request.SalesId}-SPLIT",
+            OriginalOrderAmount = 100000m,
+            SplitAmount = 50000m,
+            SplitLines = new List<SplitLineInfo>
+            {
+                new SplitLineInfo
+                {
+                    OriginalLineNum = 1,
+                    NewLineNum = 1,
+                    ItemId = "ITEM-001",
+                    OriginalQty = 100,
+                    RemainingQty = 50,
+                    SplitQty = 50
+                }
+            }
+        });
+    }
+    
     public void Dispose()
     {
     }

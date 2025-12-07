@@ -2,13 +2,13 @@
 title: GBL-AX2012-MCP Quick Reference Card
 description: One-page cheat sheet for common operations
 author: Paige (Technical Writer)
-date: 2025-12-06
-version: 1.4.0
+date: 2025-12-07
+version: 1.5.0
 ---
 
 # GBL-AX2012-MCP Quick Reference Card
 
-## 🔧 All 26 Tools at a Glance
+## 🔧 All 29 Tools at a Glance
 
 ### Phase 1: Order Capture
 
@@ -65,6 +65,14 @@ version: 1.4.0
 | `ax_request_approval` | Request approval | "Request approval for SO-2024-1234" |
 | `ax_get_approval_status` | Check approval | "Status of approval APR-001" |
 | `ax_kill_switch` | Emergency stop | "Activate kill switch for writes" |
+
+### P2 Features
+
+| Tool | Purpose | Example |
+|------|---------|---------|
+| `ax_send_order_confirmation` | Send confirmation email | "Send confirmation for SO-2024-1234" |
+| `ax_get_reservation_queue` | Who's waiting for stock? | "Who's waiting for ITEM-100?" |
+| `ax_split_order_by_credit` | Split order at credit limit | "Split SO-2024-1234 by credit" |
 
 ---
 
@@ -185,4 +193,4 @@ tail -f logs/mcp-*.log
 
 ---
 
-*Version 1.4.0 | Print this card for quick reference!*
+*Version 1.5.0 | Print this card for quick reference!*

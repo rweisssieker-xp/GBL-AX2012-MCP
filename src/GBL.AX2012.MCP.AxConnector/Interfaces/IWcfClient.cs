@@ -43,3 +43,38 @@ public class SalesLineCreateRequest
     public string? WarehouseId { get; set; }
     public DateTime? RequestedDeliveryDate { get; set; }
 }
+
+public class SendOrderConfirmationRequest
+{
+    public string SalesId { get; set; } = "";
+    public string? EmailOverride { get; set; }
+    public bool IncludePrices { get; set; } = true;
+    public string? Language { get; set; }
+}
+
+public class SplitOrderRequest
+{
+    public string SalesId { get; set; } = "";
+    public decimal CreditLimit { get; set; }
+    public decimal CurrentBalance { get; set; }
+}
+
+public class SplitOrderResult
+{
+    public bool WasSplit { get; set; }
+    public string OriginalSalesId { get; set; } = "";
+    public string? NewSalesId { get; set; }
+    public decimal OriginalOrderAmount { get; set; }
+    public decimal? SplitAmount { get; set; }
+    public List<SplitLineInfo> SplitLines { get; set; } = new();
+}
+
+public class SplitLineInfo
+{
+    public int OriginalLineNum { get; set; }
+    public int? NewLineNum { get; set; }
+    public string ItemId { get; set; } = "";
+    public decimal OriginalQty { get; set; }
+    public decimal RemainingQty { get; set; }
+    public decimal SplitQty { get; set; }
+}

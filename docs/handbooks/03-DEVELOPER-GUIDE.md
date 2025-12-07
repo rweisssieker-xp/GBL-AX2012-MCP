@@ -2,8 +2,8 @@
 title: GBL-AX2012-MCP Developer Guide
 description: Technical guide for developers extending and maintaining the MCP server
 author: Paige (Technical Writer)
-date: 2025-12-06
-version: 1.4.0
+date: 2025-12-07
+version: 1.5.0
 ---
 
 # GBL-AX2012-MCP Developer Guide

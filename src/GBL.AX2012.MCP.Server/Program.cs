@@ -110,6 +110,9 @@ try
     builder.Services.AddSingleton<UpdateDeliveryDateInputValidator>();
     builder.Services.AddSingleton<AddSalesLineInputValidator>();
     builder.Services.AddSingleton<ReleaseForPickingInputValidator>();
+    builder.Services.AddSingleton<SendOrderConfirmationInputValidator>();
+    builder.Services.AddSingleton<GetReservationQueueInputValidator>();
+    builder.Services.AddSingleton<SplitOrderByCreditInputValidator>();
     
     // Register Tools - Phase 1: Order Capture
     builder.Services.AddSingleton<ITool, HealthCheckTool>();
@@ -152,6 +155,11 @@ try
     builder.Services.AddSingleton<ITool, UpdateDeliveryDateTool>();
     builder.Services.AddSingleton<ITool, AddSalesLineTool>();
     builder.Services.AddSingleton<ITool, ReleaseForPickingTool>();
+    
+    // Register Tools - P2 Features
+    builder.Services.AddSingleton<ITool, SendOrderConfirmationTool>();
+    builder.Services.AddSingleton<ITool, GetReservationQueueTool>();
+    builder.Services.AddSingleton<ITool, SplitOrderByCreditTool>();
     
     // Register Health Monitor
     builder.Services.Configure<HealthMonitorOptions>(builder.Configuration.GetSection(HealthMonitorOptions.SectionName));

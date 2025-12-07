@@ -2,8 +2,8 @@
 title: GBL-AX2012-MCP User Guide
 description: Complete guide for end users to interact with AX 2012 via MCP
 author: Paige (Technical Writer)
-date: 2025-12-06
-version: 1.4.0
+date: 2025-12-07
+version: 1.5.0
 ---
 
 # GBL-AX2012-MCP User Guide
@@ -355,6 +355,9 @@ For important operations, the system will ask for confirmation:
 | Post Payment | "Post €1000 payment for CUST-001" |
 | Settle Invoice | "Settle INV-001 with PAY-001" |
 | Close Order | "Close order SO-2024-1234" |
+| Send Confirmation | "Send order confirmation for SO-2024-1234" |
+| Reservation Queue | "Who's waiting for ITEM-100?" |
+| Split by Credit | "Split order SO-2024-1234 by credit limit" |
 
 ---
 
@@ -366,4 +369,4 @@ For important operations, the system will ask for confirmation:
 
 ---
 
-*Document Version: 1.4.0 | Last Updated: 2025-12-06*
+*Document Version: 1.5.0 | Last Updated: 2025-12-07*
