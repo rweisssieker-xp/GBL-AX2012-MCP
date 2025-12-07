@@ -5,6 +5,8 @@ public interface IWcfClient
     Task<string> CreateSalesOrderAsync(CreateSalesOrderRequest request, CancellationToken cancellationToken = default);
     Task<bool> UpdateSalesOrderAsync(UpdateSalesOrderRequest request, CancellationToken cancellationToken = default);
     Task<int> AddSalesLineAsync(SalesLineCreateRequest request, CancellationToken cancellationToken = default);
+    Task<bool> SendOrderConfirmationAsync(SendOrderConfirmationRequest request, CancellationToken cancellationToken = default);
+    Task<SplitOrderResult> SplitOrderByCreditAsync(SplitOrderRequest request, CancellationToken cancellationToken = default);
 }
 
 public class CreateSalesOrderRequest
