@@ -1,0 +1,8 @@
+# Ignore all dot-folders (folders starting with .)
+.**/
+
+# But keep these important files
+!.gitignore
+!.gitattributes
+!.github/
+!.github/**
