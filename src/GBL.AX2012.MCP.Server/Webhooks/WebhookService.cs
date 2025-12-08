@@ -5,6 +5,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using GBL.AX2012.MCP.Server.Events;
+using GBL.AX2012.MCP.Core.Models;
 
 namespace GBL.AX2012.MCP.Server.Webhooks;
 

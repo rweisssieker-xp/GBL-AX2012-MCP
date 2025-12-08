@@ -16,6 +16,8 @@ using GBL.AX2012.MCP.Server.Monitoring;
 using GBL.AX2012.MCP.AxConnector.Clients;
 using GBL.AX2012.MCP.AxConnector.Interfaces;
 using GBL.AX2012.MCP.Audit.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -74,10 +76,16 @@ try
     // Register Event Bus
     builder.Services.AddSingleton<GBL.AX2012.MCP.Server.Events.IEventBus, GBL.AX2012.MCP.Server.Events.EventBus>();
     
-    // Register Webhook Service
+    // Register Webhook Service (Database-backed)
     builder.Services.Configure<GBL.AX2012.MCP.Server.Webhooks.WebhookServiceOptions>(
         builder.Configuration.GetSection(GBL.AX2012.MCP.Server.Webhooks.WebhookServiceOptions.SectionName));
-    builder.Services.AddHttpClient<GBL.AX2012.MCP.Server.Webhooks.IWebhookService, GBL.AX2012.MCP.Server.Webhooks.WebhookService>();
+    
+    // Register Webhook DbContext
+    builder.Services.AddDbContextFactory<GBL.AX2012.MCP.Audit.Data.WebhookDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("AuditDb")));
+    
+    builder.Services.AddHttpClient();
+    builder.Services.AddSingleton<GBL.AX2012.MCP.Server.Webhooks.IWebhookService, GBL.AX2012.MCP.Server.Webhooks.DatabaseWebhookService>();
     
     // Register Kill Switch
     builder.Services.AddSingleton<IKillSwitchService, KillSwitchService>();
@@ -189,6 +197,11 @@ try
     builder.Services.Configure<HealthMonitorOptions>(builder.Configuration.GetSection(HealthMonitorOptions.SectionName));
     builder.Services.AddSingleton<HealthMonitorService>();
     builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
+    
+    // Register Connection Pool Monitor
+    builder.Services.AddSingleton<GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor, GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor>();
+    builder.Services.AddHostedService<GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor>(sp => 
+        (GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor)sp.GetRequiredService<GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor>());
     
     // Register Self-Healing Service
     builder.Services.AddSingleton<GBL.AX2012.MCP.Server.Resilience.ISelfHealingService, GBL.AX2012.MCP.Server.Resilience.SelfHealingService>();

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GBL.AX2012.MCP.Audit")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b4e147aba6b8d5c5a6067bc716ea2c8db1563981")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4f3c31c27928bf8e760eab468f17cd88c770609e")]
 [assembly: System.Reflection.AssemblyProductAttribute("GBL.AX2012.MCP.Audit")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GBL.AX2012.MCP.Audit")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

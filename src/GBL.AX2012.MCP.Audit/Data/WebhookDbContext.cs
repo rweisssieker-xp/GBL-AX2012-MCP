@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using GBL.AX2012.MCP.Server.Webhooks;
+using GBL.AX2012.MCP.Core.Models;
 
 namespace GBL.AX2012.MCP.Audit.Data;
 

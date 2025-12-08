@@ -39,16 +39,19 @@ public class SelfHealingService : ISelfHealingService, IHostedService
 {
     private readonly ILogger<SelfHealingService> _logger;
     private readonly ICircuitBreaker _circuitBreaker;
+    private readonly IConnectionPoolMonitor? _connectionPoolMonitor;
     private readonly ConcurrentDictionary<string, ComponentStatus> _componentStatuses = new();
     private readonly RetryStatistics _retryStats = new();
     private Timer? _monitoringTimer;
     
     public SelfHealingService(
         ILogger<SelfHealingService> logger,
-        ICircuitBreaker circuitBreaker)
+        ICircuitBreaker circuitBreaker,
+        IConnectionPoolMonitor? connectionPoolMonitor = null)
     {
         _logger = logger;
         _circuitBreaker = circuitBreaker;
+        _connectionPoolMonitor = connectionPoolMonitor;
     }
     
     public Task StartAsync(CancellationToken cancellationToken)
@@ -75,8 +78,15 @@ public class SelfHealingService : ISelfHealingService, IHostedService
             var cbState = _circuitBreaker.State;
             UpdateComponentStatus("ax_connection", "circuit_breaker", cbState.ToString(), "healthy");
             
-            // Monitor connection pools (would integrate with actual pool monitoring)
-            // UpdateComponentStatus("aif_pool", "connection_pool", "healthy", "healthy");
+            // Monitor connection pools
+            if (_connectionPoolMonitor != null)
+            {
+                var poolStatuses = _connectionPoolMonitor.GetAllStatuses();
+                foreach (var pool in poolStatuses)
+                {
+                    UpdateComponentStatus(pool.Key, "connection_pool", pool.Value.Status, pool.Value.Status);
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -129,6 +139,23 @@ public class SelfHealingService : ISelfHealingService, IHostedService
                     kvp => kvp.Value),
             RetryStats = _retryStats
         };
+        
+        // Add connection pool statuses from monitor if available
+        if (_connectionPoolMonitor != null)
+        {
+            var poolStatuses = _connectionPoolMonitor.GetAllStatuses();
+            foreach (var pool in poolStatuses)
+            {
+                status.ConnectionPools[pool.Key] = new ComponentStatus
+                {
+                    Name = pool.Value.Name,
+                    State = pool.Value.Status,
+                    Status = pool.Value.Status,
+                    AutoRecoveries = pool.Value.RecoveredConnections,
+                    LastRecovery = pool.Value.LastRecovery
+                };
+            }
+        }
         
         return Task.FromResult(status);
     }

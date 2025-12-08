@@ -80,41 +80,81 @@ public class GetRoiMetricsTool : ToolBase<GetRoiMetricsInput, GetRoiMetricsOutpu
         var dateTo = input.DateTo ?? DateTime.UtcNow;
         
         // Query audit log for successful operations in date range
-        // Note: This is a simplified implementation. In production, you'd query the audit database
+        var query = new AuditQuery
+        {
+            DateFrom = dateFrom,
+            DateTo = dateTo,
+            Success = true,
+            MaxResults = 10000
+        };
+        
+        var auditEntries = await _auditService.QueryAsync(query, cancellationToken);
+        var entries = auditEntries.ToList();
+        
         var metrics = new GetRoiMetricsOutput
         {
-            TotalOperations = 0,
+            TotalOperations = entries.Count,
             TotalTimeSavedHours = 0,
             TotalCostSavedEur = 0,
             ByTool = new List<RoiMetricsByTool>()
         };
         
         // Group by tool
-        var toolGroups = new Dictionary<string, RoiMetricsByTool>();
+        var toolGroups = entries
+            .Where(e => _baselineTimes.ContainsKey(e.ToolName))
+            .GroupBy(e => e.ToolName)
+            .ToList();
         
-        // Simulate metrics calculation (in production, query audit database)
-        // For now, return sample data structure
-        foreach (var baseline in _baselineTimes)
+        foreach (var group in toolGroups)
         {
+            var toolName = group.Key;
+            var baselineSec = _baselineTimes[toolName];
+            var operations = group.ToList();
+            
+            // Calculate time saved: baseline - actual duration
+            // Assume 90% time saved (MCP is much faster than manual)
+            var avgTimeSavedSec = baselineSec * 0.9;
+            var totalTimeSavedHours = (operations.Count * avgTimeSavedSec) / 3600.0;
+            var costSavedEur = (decimal)totalTimeSavedHours * _hourlyRate;
+            
             var toolMetrics = new RoiMetricsByTool
             {
-                Tool = baseline.Key,
-                Operations = 100, // Sample
-                AvgTimeSavedSec = baseline.Value * 0.9, // Assume 90% time saved
-                TotalTimeSavedHours = 0,
-                CostSavedEur = 0
+                Tool = toolName,
+                Operations = operations.Count,
+                AvgTimeSavedSec = avgTimeSavedSec,
+                TotalTimeSavedHours = totalTimeSavedHours,
+                CostSavedEur = costSavedEur
             };
             
-            toolMetrics.TotalTimeSavedHours = (toolMetrics.Operations * toolMetrics.AvgTimeSavedSec) / 3600.0;
-            toolMetrics.CostSavedEur = (decimal)toolMetrics.TotalTimeSavedHours * _hourlyRate;
-            
             metrics.ByTool.Add(toolMetrics);
-            metrics.TotalOperations += toolMetrics.Operations;
-            metrics.TotalTimeSavedHours += toolMetrics.TotalTimeSavedHours;
-            metrics.TotalCostSavedEur += toolMetrics.CostSavedEur;
+            metrics.TotalTimeSavedHours += totalTimeSavedHours;
+            metrics.TotalCostSavedEur += costSavedEur;
         }
         
-        _logger.LogInformation("ROI metrics calculated: {TotalOps} operations, {Hours} hours saved, {Cost} EUR saved",
+        // Group by user if requested
+        if (input.GroupBy == "user")
+        {
+            var userGroups = entries
+                .Where(e => _baselineTimes.ContainsKey(e.ToolName))
+                .GroupBy(e => e.UserId)
+                .ToDictionary(g => g.Key, g =>
+                {
+                    var userOps = g.ToList();
+                    var totalSaved = userOps.Sum(op => _baselineTimes.GetValueOrDefault(op.ToolName, 0) * 0.9 / 3600.0);
+                    return new
+                    {
+                        Operations = userOps.Count,
+                        TimeSavedHours = totalSaved,
+                        CostSavedEur = (decimal)totalSaved * _hourlyRate
+                    };
+                });
+            
+            metrics.ByUser = userGroups.ToDictionary(
+                kvp => kvp.Key,
+                kvp => (object)new { kvp.Value.Operations, kvp.Value.TimeSavedHours, kvp.Value.CostSavedEur });
+        }
+        
+        _logger.LogInformation("ROI metrics calculated: {TotalOps} operations, {Hours:F2} hours saved, {Cost:F2} EUR saved",
             metrics.TotalOperations, metrics.TotalTimeSavedHours, metrics.TotalCostSavedEur);
         
         return metrics;
