@@ -4,6 +4,7 @@ using GBL.AX2012.MCP.Core.Exceptions;
 using GBL.AX2012.MCP.Core.Interfaces;
 using GBL.AX2012.MCP.Core.Models;
 using GBL.AX2012.MCP.AxConnector.Interfaces;
+using GBL.AX2012.MCP.Server.Events;
 
 namespace GBL.AX2012.MCP.Server.Tools;
 
@@ -53,6 +54,7 @@ public class PostPaymentTool : ToolBase<PostPaymentInput, PostPaymentOutput>
 {
     private readonly IWcfClient _wcfClient;
     private readonly IAifClient _aifClient;
+    private readonly IEventBus? _eventBus;
     
     public override string Name => "ax_post_payment";
     public override string Description => "Post a customer payment and optionally settle against invoices";
@@ -62,11 +64,13 @@ public class PostPaymentTool : ToolBase<PostPaymentInput, PostPaymentOutput>
         IAuditService audit,
         PostPaymentInputValidator validator,
         IWcfClient wcfClient,
-        IAifClient aifClient)
+        IAifClient aifClient,
+        IEventBus? eventBus = null)
         : base(logger, audit, validator)
     {
         _wcfClient = wcfClient;
         _aifClient = aifClient;
+        _eventBus = eventBus;
     }
     
     protected override async Task<PostPaymentOutput> ExecuteCoreAsync(
@@ -109,10 +113,7 @@ public class PostPaymentTool : ToolBase<PostPaymentInput, PostPaymentOutput>
             }
         }
         
-        _logger.LogInformation("Posted payment {PaymentId} for {Customer}, amount {Amount} {Currency}", 
-            paymentId, input.CustomerAccount, input.Amount, input.Currency);
-        
-        return new PostPaymentOutput
+        var output = new PostPaymentOutput
         {
             PaymentId = paymentId,
             CustomerAccount = input.CustomerAccount,
@@ -125,5 +126,23 @@ public class PostPaymentTool : ToolBase<PostPaymentInput, PostPaymentOutput>
             RemainingAmount = remainingAmount,
             Status = remainingAmount > 0 ? "PartiallyApplied" : "FullyApplied"
         };
+        
+        // Publish event
+        if (_eventBus != null)
+        {
+            await _eventBus.PublishAsync(new PaymentPostedEvent
+            {
+                PaymentId = paymentId,
+                CustomerAccount = input.CustomerAccount,
+                Amount = input.Amount,
+                PostedAt = DateTime.UtcNow,
+                UserId = context.UserId
+            }, cancellationToken);
+        }
+        
+        _logger.LogInformation("Posted payment {PaymentId} for {Customer}, amount {Amount} {Currency}", 
+            paymentId, input.CustomerAccount, input.Amount, input.Currency);
+        
+        return output;
     }
 }

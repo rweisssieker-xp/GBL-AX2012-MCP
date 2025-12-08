@@ -4,6 +4,7 @@ using GBL.AX2012.MCP.Core.Exceptions;
 using GBL.AX2012.MCP.Core.Interfaces;
 using GBL.AX2012.MCP.Core.Models;
 using GBL.AX2012.MCP.AxConnector.Interfaces;
+using GBL.AX2012.MCP.Server.Events;
 
 namespace GBL.AX2012.MCP.Server.Tools;
 
@@ -60,6 +61,7 @@ public class UpdateSalesOrderTool : ToolBase<UpdateSalesOrderInput, UpdateSalesO
     private readonly IWcfClient _wcfClient;
     private readonly IAifClient _aifClient;
     private readonly IIdempotencyStore _idempotencyStore;
+    private readonly IEventBus? _eventBus;
     
     public override string Name => "ax_update_salesorder";
     public override string Description => "Update an existing sales order (status, lines, delivery date)";
@@ -70,12 +72,14 @@ public class UpdateSalesOrderTool : ToolBase<UpdateSalesOrderInput, UpdateSalesO
         UpdateSalesOrderInputValidator validator,
         IWcfClient wcfClient,
         IAifClient aifClient,
-        IIdempotencyStore idempotencyStore)
+        IIdempotencyStore idempotencyStore,
+        IEventBus? eventBus = null)
         : base(logger, audit, validator)
     {
         _wcfClient = wcfClient;
         _aifClient = aifClient;
         _idempotencyStore = idempotencyStore;
+        _eventBus = eventBus;
     }
     
     protected override async Task<UpdateSalesOrderOutput> ExecuteCoreAsync(
@@ -192,6 +196,18 @@ public class UpdateSalesOrderTool : ToolBase<UpdateSalesOrderInput, UpdateSalesO
         
         // Store for idempotency
         await _idempotencyStore.SetAsync(input.IdempotencyKey, output, TimeSpan.FromDays(7), cancellationToken);
+        
+        // Publish event
+        if (_eventBus != null && changes.Any())
+        {
+            await _eventBus.PublishAsync(new SalesOrderUpdatedEvent
+            {
+                SalesId = input.SalesId,
+                CustomerAccount = order.CustomerAccount,
+                UpdatedAt = DateTime.UtcNow,
+                UserId = context.UserId
+            }, cancellationToken);
+        }
         
         _logger.LogInformation("Updated sales order {SalesId}: {Changes}", input.SalesId, string.Join(", ", changes));
         

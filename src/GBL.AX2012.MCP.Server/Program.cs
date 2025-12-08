@@ -125,6 +125,7 @@ try
     builder.Services.AddSingleton<SubscribeWebhookInputValidator>();
     builder.Services.AddSingleton<UnsubscribeWebhookInputValidator>();
     builder.Services.AddSingleton<GetRoiMetricsInputValidator>();
+    builder.Services.AddSingleton<BulkImportInputValidator>();
     
     // Register Tools - Phase 1: Order Capture
     builder.Services.AddSingleton<ITool, HealthCheckTool>();
@@ -179,11 +180,20 @@ try
     builder.Services.AddSingleton<ITool, ListWebhooksTool>();
     builder.Services.AddSingleton<ITool, UnsubscribeWebhookTool>();
     builder.Services.AddSingleton<ITool, GetRoiMetricsTool>();
+    builder.Services.AddSingleton<ITool, BulkImportTool>();
+    
+    // Register Tools - Epic 8: Self-Healing
+    builder.Services.AddSingleton<ITool, GetSelfHealingStatusTool>();
     
     // Register Health Monitor
     builder.Services.Configure<HealthMonitorOptions>(builder.Configuration.GetSection(HealthMonitorOptions.SectionName));
     builder.Services.AddSingleton<HealthMonitorService>();
     builder.Services.AddHostedService(sp => sp.GetRequiredService<HealthMonitorService>());
+    
+    // Register Self-Healing Service
+    builder.Services.AddSingleton<GBL.AX2012.MCP.Server.Resilience.ISelfHealingService, GBL.AX2012.MCP.Server.Resilience.SelfHealingService>();
+    builder.Services.AddHostedService<GBL.AX2012.MCP.Server.Resilience.SelfHealingService>(sp => 
+        (GBL.AX2012.MCP.Server.Resilience.SelfHealingService)sp.GetRequiredService<GBL.AX2012.MCP.Server.Resilience.ISelfHealingService>());
     
     // Register MCP Server (stdio)
     builder.Services.AddHostedService<McpServer>();

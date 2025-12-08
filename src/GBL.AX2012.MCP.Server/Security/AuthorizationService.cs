@@ -58,7 +58,9 @@ public static class ToolRoleMapping
         ["ax_subscribe_webhook"] = ["MCP_Admin"],
         ["ax_list_webhooks"] = ["MCP_Admin"],
         ["ax_unsubscribe_webhook"] = ["MCP_Admin"],
-        ["ax_get_roi_metrics"] = ["MCP_Admin"]
+        ["ax_get_roi_metrics"] = ["MCP_Admin"],
+        ["ax_bulk_import"] = ["MCP_Write"],
+        ["ax_get_self_healing_status"] = ["MCP_Admin"]
     };
     
     public static string[] GetRequiredRoles(string toolName)

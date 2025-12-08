@@ -4,6 +4,7 @@ using GBL.AX2012.MCP.Core.Exceptions;
 using GBL.AX2012.MCP.Core.Interfaces;
 using GBL.AX2012.MCP.Core.Models;
 using GBL.AX2012.MCP.AxConnector.Interfaces;
+using GBL.AX2012.MCP.Server.Events;
 
 namespace GBL.AX2012.MCP.Server.Tools;
 
@@ -42,6 +43,7 @@ public class CreateInvoiceTool : ToolBase<CreateInvoiceInput, CreateInvoiceOutpu
 {
     private readonly IWcfClient _wcfClient;
     private readonly IAifClient _aifClient;
+    private readonly IEventBus? _eventBus;
     
     public override string Name => "ax_create_invoice";
     public override string Description => "Create and optionally post an invoice for a sales order";
@@ -51,11 +53,13 @@ public class CreateInvoiceTool : ToolBase<CreateInvoiceInput, CreateInvoiceOutpu
         IAuditService audit,
         CreateInvoiceInputValidator validator,
         IWcfClient wcfClient,
-        IAifClient aifClient)
+        IAifClient aifClient,
+        IEventBus? eventBus = null)
         : base(logger, audit, validator)
     {
         _wcfClient = wcfClient;
         _aifClient = aifClient;
+        _eventBus = eventBus;
     }
     
     protected override async Task<CreateInvoiceOutput> ExecuteCoreAsync(
@@ -87,10 +91,7 @@ public class CreateInvoiceTool : ToolBase<CreateInvoiceInput, CreateInvoiceOutpu
         // Calculate due date based on payment terms
         var dueDate = invoiceDate.AddDays(30); // Default Net30
         
-        _logger.LogInformation("Creating invoice {InvoiceId} for order {SalesId}, amount {Amount}", 
-            invoiceId, input.SalesId, netAmount + taxAmount);
-        
-        return new CreateInvoiceOutput
+        var output = new CreateInvoiceOutput
         {
             SalesId = input.SalesId,
             InvoiceId = invoiceId,
@@ -104,5 +105,23 @@ public class CreateInvoiceTool : ToolBase<CreateInvoiceInput, CreateInvoiceOutpu
             DueDate = dueDate,
             Status = input.PostImmediately ? "Posted" : "Draft"
         };
+        
+        // Publish event
+        if (_eventBus != null)
+        {
+            await _eventBus.PublishAsync(new InvoiceCreatedEvent
+            {
+                InvoiceId = invoiceId,
+                CustomerAccount = order.CustomerAccount,
+                Amount = netAmount + taxAmount,
+                CreatedAt = DateTime.UtcNow,
+                UserId = context.UserId
+            }, cancellationToken);
+        }
+        
+        _logger.LogInformation("Creating invoice {InvoiceId} for order {SalesId}, amount {Amount}", 
+            invoiceId, input.SalesId, netAmount + taxAmount);
+        
+        return output;
     }
 }
