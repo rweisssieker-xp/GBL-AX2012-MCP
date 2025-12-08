@@ -4,6 +4,8 @@ using GBL.AX2012.MCP.Core.Exceptions;
 using GBL.AX2012.MCP.Core.Interfaces;
 using GBL.AX2012.MCP.Core.Models;
 using GBL.AX2012.MCP.AxConnector.Interfaces;
+using GBL.AX2012.MCP.Server.Events;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GBL.AX2012.MCP.Server.Tools;
 
@@ -79,6 +81,7 @@ public class CreateSalesOrderTool : ToolBase<CreateSalesOrderInput, CreateSalesO
     private readonly IWcfClient _wcfClient;
     private readonly IAifClient _aifClient;
     private readonly IIdempotencyStore _idempotencyStore;
+    private readonly IEventBus? _eventBus;
     
     public override string Name => "ax_create_salesorder";
     public override string Description => "Create a new sales order in AX 2012";
@@ -89,12 +92,14 @@ public class CreateSalesOrderTool : ToolBase<CreateSalesOrderInput, CreateSalesO
         CreateSalesOrderInputValidator validator,
         IWcfClient wcfClient,
         IAifClient aifClient,
-        IIdempotencyStore idempotencyStore)
+        IIdempotencyStore idempotencyStore,
+        IEventBus? eventBus = null)
         : base(logger, audit, validator)
     {
         _wcfClient = wcfClient;
         _aifClient = aifClient;
         _idempotencyStore = idempotencyStore;
+        _eventBus = eventBus;
     }
     
     protected override async Task<CreateSalesOrderOutput> ExecuteCoreAsync(
@@ -199,6 +204,19 @@ public class CreateSalesOrderTool : ToolBase<CreateSalesOrderInput, CreateSalesO
         
         // 7. Store for idempotency
         await _idempotencyStore.SetAsync(input.IdempotencyKey, output, TimeSpan.FromDays(7), cancellationToken);
+        
+        // 8. Publish event
+        if (_eventBus != null)
+        {
+            await _eventBus.PublishAsync(new SalesOrderCreatedEvent
+            {
+                SalesId = salesId,
+                CustomerAccount = input.CustomerAccount,
+                TotalAmount = totalAmount,
+                CreatedAt = DateTime.UtcNow,
+                UserId = context.UserId
+            }, cancellationToken);
+        }
         
         _logger.LogInformation("Created sales order {SalesId} for customer {Customer}, total {Total} {Currency}", 
             salesId, input.CustomerAccount, totalAmount, customer.Currency);

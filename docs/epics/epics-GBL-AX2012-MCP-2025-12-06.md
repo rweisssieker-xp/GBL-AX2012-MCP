@@ -33,6 +33,8 @@ This document provides the complete epic and story breakdown for GBL-AX2012-MCP,
 | **4** | Order Creation & Validation | 7 | FR-006 |
 | **5** | Security & Audit | 5 | NFR-003, US-006, US-007 |
 | **6** | Resilience & Monitoring | 4 | NFR-004, NFR-001, NFR-002 |
+| **7** | Batch Operations & Webhooks | 6 | New Requirements | **NEW** |
+| **8** | Zero-Downtime & Self-Healing | 6 | NFR-002 (Enhanced), NFR-004 (Enhanced) | **NEW** |
 
 **Total:** 34 Stories across 6 Epics
 
@@ -1283,8 +1285,8 @@ So that I can analyze logs in Seq/ELK.
 
 | Metric | Value |
 |--------|-------|
-| **Total Epics** | 6 |
-| **Total Stories** | 34 |
+| **Total Epics** | 8 |
+| **Total Stories** | 46 (34 + 12 new) |
 | **FRs Covered** | 6/6 (100%) |
 | **NFRs Covered** | 4/4 (100%) |
 | **User Stories Covered** | 7/7 (100%) |
@@ -1303,6 +1305,10 @@ Epic 1: Foundation
     ├──> Epic 5: Security & Audit
     │
     └──> Epic 6: Resilience & Monitoring
+    │
+    ├──> Epic 7: Batch Operations & Webhooks (NEW)
+    │
+    └──> Epic 8: Zero-Downtime & Self-Healing (NEW)
 ```
 
 ### Recommended Implementation Order
@@ -1313,6 +1319,8 @@ Epic 1: Foundation
 4. **Epic 3** - Inventory & Pricing
 5. **Epic 4** - Order Creation
 6. **Epic 6** - Resilience & Monitoring
+7. **Epic 7** - Batch Operations & Webhooks (Phase 2)
+8. **Epic 8** - Zero-Downtime & Self-Healing (Phase 3)
 
 ---
 

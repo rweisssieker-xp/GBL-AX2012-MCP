@@ -71,6 +71,14 @@ try
     builder.Services.AddHttpClient("Notifications");
     builder.Services.AddSingleton<INotificationService, NullNotificationService>(); // Use NotificationService when webhooks configured
     
+    // Register Event Bus
+    builder.Services.AddSingleton<GBL.AX2012.MCP.Server.Events.IEventBus, GBL.AX2012.MCP.Server.Events.EventBus>();
+    
+    // Register Webhook Service
+    builder.Services.Configure<GBL.AX2012.MCP.Server.Webhooks.WebhookServiceOptions>(
+        builder.Configuration.GetSection(GBL.AX2012.MCP.Server.Webhooks.WebhookServiceOptions.SectionName));
+    builder.Services.AddHttpClient<GBL.AX2012.MCP.Server.Webhooks.IWebhookService, GBL.AX2012.MCP.Server.Webhooks.WebhookService>();
+    
     // Register Kill Switch
     builder.Services.AddSingleton<IKillSwitchService, KillSwitchService>();
     builder.Services.AddSingleton<KillSwitchInputValidator>();
@@ -113,6 +121,10 @@ try
     builder.Services.AddSingleton<SendOrderConfirmationInputValidator>();
     builder.Services.AddSingleton<GetReservationQueueInputValidator>();
     builder.Services.AddSingleton<SplitOrderByCreditInputValidator>();
+    builder.Services.AddSingleton<BatchOperationsInputValidator>();
+    builder.Services.AddSingleton<SubscribeWebhookInputValidator>();
+    builder.Services.AddSingleton<UnsubscribeWebhookInputValidator>();
+    builder.Services.AddSingleton<GetRoiMetricsInputValidator>();
     
     // Register Tools - Phase 1: Order Capture
     builder.Services.AddSingleton<ITool, HealthCheckTool>();
@@ -160,6 +172,13 @@ try
     builder.Services.AddSingleton<ITool, SendOrderConfirmationTool>();
     builder.Services.AddSingleton<ITool, GetReservationQueueTool>();
     builder.Services.AddSingleton<ITool, SplitOrderByCreditTool>();
+    
+    // Register Tools - Epic 7: Batch Operations & Webhooks
+    builder.Services.AddSingleton<ITool, BatchOperationsTool>();
+    builder.Services.AddSingleton<ITool, SubscribeWebhookTool>();
+    builder.Services.AddSingleton<ITool, ListWebhooksTool>();
+    builder.Services.AddSingleton<ITool, UnsubscribeWebhookTool>();
+    builder.Services.AddSingleton<ITool, GetRoiMetricsTool>();
     
     // Register Health Monitor
     builder.Services.Configure<HealthMonitorOptions>(builder.Configuration.GetSection(HealthMonitorOptions.SectionName));

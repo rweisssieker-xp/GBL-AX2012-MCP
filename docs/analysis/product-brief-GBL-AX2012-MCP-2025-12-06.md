@@ -122,6 +122,15 @@ Trigger (E-Mail/Webshop/EDI/Chat/Voice)
 | 15 | **MVP in 2 Weeks** | Execution | 6 P0-Tools, Health Check, Audit Log — funktionierendes Produkt | HIGH — Team capability |
 | 16 | **No-Code Orchestration** | Execution | Business kann Flows anpassen ohne Deployment-Cycle | MEDIUM — n8n dependency |
 | 17 | **Open Protocol + Proprietary Impl** | Strategy | MCP ist offener Standard, AX-Implementation ist proprietär | HIGH — Moat |
+| 18 | **IT-Entlastung** | Business | Einmal bauen, alle profitieren. MCP ist die API-Schicht die IT seit Jahren braucht | HIGH — Architecture |
+| 19 | **Cost Transparency & ROI Tracking** | Business | Real-time ROI-Dashboard zeigt Business Impact pro Operation, User, Department | MEDIUM — Analytics |
+| 20 | **Zero-Downtime Deployment** | Enterprise | Deploy neue Tools ohne Service-Unterbrechung. Blue-green Deployment für 99.9%+ Availability | HIGH — Architecture |
+| 21 | **Self-Healing Operations** | Enterprise | System erkennt und behebt Fehler automatisch. Circuit Breaker, Connection Pool, Retry Logic auto-recover | MEDIUM — Resilience |
+| 22 | **Vendor Lock-in Avoidance** | Strategy | MCP ist offener Standard. Switch zu anderem MCP-Server oder eigene Implementation möglich | HIGH — Open Standard |
+| 23 | **Real-Time Cost Tracking** | Business | Track Cost per Operation, User, Department. Data-driven Decisions welche Automations am wertvollsten | LOW — Analytics |
+| 24 | **Compliance Automation** | Enterprise | SOX, GDPR, Industry Regulations out-of-the-box. Automatische Audit Trails, Data Retention Policies | MEDIUM — Compliance |
+| 25 | **Multi-Language Support** | UX | Interface und Error Messages in mehreren Sprachen. Users interagieren in ihrer Muttersprache | LOW — i18n |
+| 26 | **On-Premise Data Sovereignty** | Enterprise | Alle Daten bleiben on-premise. Keine Cloud-Dependencies. Perfekt für regulierte Industrien | MEDIUM — Security |
 
 ### Top 5 Killer USPs
 
@@ -132,6 +141,14 @@ Trigger (E-Mail/Webshop/EDI/Chat/Voice)
 | **#3** | Conversational ERP | "Natürliche Sprache statt 47 Klicks — ERP wird endlich menschlich" |
 | **#4** | Time-to-Value in Days | "Erste Automation in Tagen, nicht Monaten — 10x schneller als klassische Integration" |
 | **#5** | Hallucination-Proof + Audit | "AI-Sicherheit für Enterprise — validiert, geloggt, compliant" |
+
+### New Top USPs (Added 2025-12-06)
+
+| Rank | USP | Elevator Pitch |
+|------|-----|----------------|
+| **#6** | Cost Transparency & ROI Tracking | "Sieh deinen ROI in Real-Time. Jede Order zeigt genau wie viel Zeit/Geld gespart wurde vs. manueller AX-Eingabe" |
+| **#7** | Zero-Downtime Deployment | "Deploy neue Capabilities ohne eine Minute Downtime. Deine Users merken Updates nicht" |
+| **#8** | Vendor Lock-in Avoidance | "Offene Standards, nicht proprietäre APIs. Wenn du wechseln musst, bleiben deine Workflows intakt" |
 
 ---
 

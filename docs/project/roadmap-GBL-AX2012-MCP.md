@@ -102,8 +102,9 @@ Expand to full order lifecycle management, integrate with n8n for automation.
 | **Sprint 8** | 15-16 | `ax_create_customer`, `ax_update_customer` |
 | **Sprint 9** | 17-18 | `ax_reserve_salesline`, `ax_check_credit` |
 | **Sprint 10** | 19-20 | n8n integration, first automation flows |
+| **Sprint 10.5** | 20 | **Batch Operations**, **Webhook Notifications** (NEW) |
 | **Sprint 11** | 21-22 | Rollout to sales team (50%) |
-| **Sprint 12** | 23-24 | Monitoring, optimization |
+| **Sprint 12** | 23-24 | Monitoring, optimization, **Cost Tracking Dashboard** (NEW) |
 
 ### Tools Delivered
 
@@ -117,6 +118,9 @@ Expand to full order lifecycle management, integrate with n8n for automation.
 | `ax_reserve_salesline` | P1 | High |
 | `ax_check_credit` | P1 | Medium |
 | `ax_update_credit_limit` | P2 | Medium |
+| `ax_batch_operations` | P1 | Medium | **NEW** |
+| `ax_subscribe_webhook` | P1 | Medium | **NEW** |
+| `ax_get_roi_metrics` | P2 | Low | **NEW** |
 
 ### Automation Flows (n8n)
 
@@ -125,6 +129,8 @@ Expand to full order lifecycle management, integrate with n8n for automation.
 | Email Order Processing | New email with order | Parse → Validate → Create Order → Confirm |
 | Credit Alert | Credit limit exceeded | Notify Finance → Hold Order |
 | Low Stock Alert | Inventory below threshold | Notify SCM → Suggest Reorder |
+| **Webhook Events** | **Order created, payment posted** | **Real-time notifications to n8n/external systems** | **NEW** |
+| **Batch Order Import** | **EDI/CSV file** | **Process 100+ orders in single batch** | **NEW** |
 
 ### Success Criteria
 
@@ -140,7 +146,7 @@ Expand to full order lifecycle management, integrate with n8n for automation.
 ## Phase 3: Fulfillment (Month 7-9)
 
 ### Objective
-Automate fulfillment process from picking to invoicing, enable AI-agent autonomous mode.
+Automate fulfillment process from picking to invoicing, enable AI-agent autonomous mode, implement zero-downtime deployment and self-healing.
 
 ### Deliverables
 
@@ -152,6 +158,7 @@ Automate fulfillment process from picking to invoicing, enable AI-agent autonomo
 | **Sprint 16** | 31-32 | AI-Agent autonomous mode |
 | **Sprint 17** | 33-34 | SCM team rollout |
 | **Sprint 18** | 35-36 | Finance team rollout |
+| **Sprint 18.5** | 36 | **Zero-Downtime Deployment**, **Self-Healing Operations** (NEW) |
 
 ### Tools Delivered
 
@@ -164,6 +171,8 @@ Automate fulfillment process from picking to invoicing, enable AI-agent autonomo
 | `ax_create_shipment` | P1 | Medium |
 | `ax_post_invoice` | P1 | High |
 | `ax_get_invoice` | P1 | Low |
+| **Blue-Green Deployment** | P2 | High | **NEW** |
+| **Self-Healing Operations** | P2 | Medium | **NEW** |
 
 ### AI-Agent Mode
 

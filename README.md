@@ -43,6 +43,15 @@ A production-ready MCP server that enables AI assistants to interact with AX 201
 | `ax_request_approval` | Request approval for high-value operations | Write |
 | `ax_get_approval_status` | Check approval status | Read |
 
+#### Batch Operations & Webhooks (NEW)
+| Tool | Description | Role |
+|------|-------------|------|
+| `ax_batch_operations` | Execute multiple operations in a single call | Write |
+| `ax_subscribe_webhook` | Subscribe to MCP events via webhooks | Admin |
+| `ax_list_webhooks` | List all webhook subscriptions | Admin |
+| `ax_unsubscribe_webhook` | Unsubscribe from a webhook | Admin |
+| `ax_get_roi_metrics` | Get ROI metrics for MCP operations | Admin |
+
 ### Architecture
 
 ```

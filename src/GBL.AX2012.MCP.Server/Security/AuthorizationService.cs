@@ -53,7 +53,12 @@ public static class ToolRoleMapping
         ["ax_simulate_price"] = ["MCP_Read"],
         ["ax_create_salesorder"] = ["MCP_Write"],
         ["ax_update_salesorder"] = ["MCP_Write"],
-        ["ax_query_audit"] = ["MCP_Admin"]
+        ["ax_query_audit"] = ["MCP_Admin"],
+        ["ax_batch_operations"] = ["MCP_Write"],
+        ["ax_subscribe_webhook"] = ["MCP_Admin"],
+        ["ax_list_webhooks"] = ["MCP_Admin"],
+        ["ax_unsubscribe_webhook"] = ["MCP_Admin"],
+        ["ax_get_roi_metrics"] = ["MCP_Admin"]
     };
     
     public static string[] GetRequiredRoles(string toolName)
