@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "5NQtf8qqJyQ=",
+  "dgSpecHash": "2MrkHtoRZAg=",
   "success": true,
   "projectFilePath": "C:\\tmp\\GBL-AX2012-MCP\\src\\GBL.AX2012.MCP.Server\\GBL.AX2012.MCP.Server.csproj",
   "expectedPackageFiles": [
@@ -115,6 +115,8 @@
     "C:\\Users\\reinerw\\.nuget\\packages\\system.security.permissions\\6.0.0\\system.security.permissions.6.0.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.security.principal.windows\\5.0.0\\system.security.principal.windows.5.0.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.servicemodel.http\\6.0.0\\system.servicemodel.http.6.0.0.nupkg.sha512",
+    "C:\\Users\\reinerw\\.nuget\\packages\\system.servicemodel.netframingbase\\6.0.0\\system.servicemodel.netframingbase.6.0.0.nupkg.sha512",
+    "C:\\Users\\reinerw\\.nuget\\packages\\system.servicemodel.nettcp\\6.0.0\\system.servicemodel.nettcp.6.0.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.servicemodel.primitives\\6.0.0\\system.servicemodel.primitives.6.0.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.text.encoding\\4.3.0\\system.text.encoding.4.3.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.text.encoding.codepages\\6.0.0\\system.text.encoding.codepages.6.0.0.nupkg.sha512",

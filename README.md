@@ -51,28 +51,35 @@ A production-ready MCP server that enables AI assistants to interact with AX 201
 | `ax_list_webhooks` | List all webhook subscriptions | Admin |
 | `ax_unsubscribe_webhook` | Unsubscribe from a webhook | Admin |
 | `ax_get_roi_metrics` | Get ROI metrics for MCP operations | Admin |
+| `ax_bulk_import` | Import data from CSV/JSON | Write |
+
+#### Self-Healing (NEW)
+| Tool | Description | Role |
+|------|-------------|------|
+| `ax_get_self_healing_status` | Get status of self-healing components | Admin |
 
 ### Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        MCP Server                                │
+│                        MCP Server (.NET 8)                      │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
 │  │ Rate Limiter│  │Circuit Break│  │ Windows Authentication  │  │
 │  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
 │  ┌─────────────────────────────────────────────────────────────┐│
 │  │                         Tools                                ││
 │  │  HealthCheck │ GetCustomer │ GetSalesOrder │ CheckInventory ││
-│  │  SimulatePrice │ CreateSalesOrder                           ││
+│  │  SimulatePrice │ CreateSalesOrder │ BatchOps │ Webhooks     ││
 │  └─────────────────────────────────────────────────────────────┘│
 └─────────────────────────────────────────────────────────────────┘
                               │
         ┌─────────────────────┼─────────────────────┐
         ▼                     ▼                     ▼
-┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-│   AIF Client  │    │   WCF Client  │    │ BC.NET Client │
-│   (Reads)     │    │   (Writes)    │    │   (Health)    │
-└───────────────┘    └───────────────┘    └───────────────┘
+┌───────────────┐    ┌───────────────┐    ┌──────────────────────┐
+│ AIF Client    │    │ WCF Client    │    │ BC.Wrapper Service  │
+│ HTTP/NetTcp   │    │ (Writes)      │    │ (.NET Framework)    │
+│ (Reads)       │    │               │    │ → BC.NET → AX       │
+└───────────────┘    └───────────────┘    └──────────────────────┘
         │                     │                     │
         └─────────────────────┼─────────────────────┘
                               ▼
@@ -80,6 +87,12 @@ A production-ready MCP server that enables AI assistants to interact with AX 201
                     │  AX 2012 R3 AOS   │
                     └───────────────────┘
 ```
+
+**Features:**
+- ✅ **Automatic Fallback:** HTTP → NetTcp for AIF
+- ✅ **BC.Wrapper:** .NET Framework bridge for BC.NET
+- ✅ **Configuration Validation:** Startup checks
+- ✅ **Self-Healing:** Automatic recovery
 
 ### Multi-Channel Transport
 
@@ -142,11 +155,20 @@ Edit `appsettings.json`:
 {
   "McpServer": {
     "ServerName": "gbl-ax2012-mcp",
-    "ServerVersion": "1.0.0"
+    "ServerVersion": "1.6.0"
   },
   "AifClient": {
     "BaseUrl": "http://ax-aos:8101/DynamicsAx/Services",
-    "Company": "DAT"
+    "Company": "DAT",
+    "UseNetTcp": false,
+    "NetTcpPort": 8201,
+    "FallbackStrategy": "auto"
+  },
+  "BusinessConnector": {
+    "ObjectServer": "ax-aos:2712",
+    "Company": "DAT",
+    "UseWrapper": true,
+    "WrapperUrl": "http://localhost:8090"
   },
   "RateLimiter": {
     "RequestsPerMinute": 100
@@ -154,9 +176,29 @@ Edit `appsettings.json`:
   "CircuitBreaker": {
     "FailureThreshold": 3,
     "OpenDuration": "00:01:00"
+  },
+  "ConnectionStrings": {
+    "AuditDb": "Server=localhost;Database=MCP_Audit;Trusted_Connection=True;TrustServerCertificate=True"
   }
 }
 ```
+
+### New Features
+
+**NetTcp Support:**
+- Automatic fallback from HTTP to NetTcp
+- Configurable via `FallbackStrategy`: "auto", "http", or "nettcp"
+- See `docs/AIF-NETTCP-SETUP.md`
+
+**BC.Wrapper:**
+- .NET Framework service for Business Connector .NET
+- Required for .NET 8 compatibility
+- See `docs/BC-WRAPPER-SETUP.md`
+
+**Configuration Validation:**
+- Automatic validation on startup
+- Checks database, AX connections, URLs
+- Application won't start if validation fails
 
 ## Claude Desktop Integration
 

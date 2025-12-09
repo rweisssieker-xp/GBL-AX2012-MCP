@@ -17,6 +17,7 @@ using GBL.AX2012.MCP.AxConnector.Clients;
 using GBL.AX2012.MCP.AxConnector.Interfaces;
 using GBL.AX2012.MCP.Audit.Services;
 using Microsoft.EntityFrameworkCore;
+using GBL.AX2012.MCP.Server.Configuration;
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()
@@ -91,14 +92,37 @@ try
     builder.Services.AddSingleton<KillSwitchInputValidator>();
     
     // Register AX Connectors
-    builder.Services.AddHttpClient<IAifClient, AifClient>()
+    // Register HTTP AIF Client
+    builder.Services.AddHttpClient<AifClient>()
         .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
         {
             UseDefaultCredentials = true,
             PreAuthenticate = true
         });
+    
+    // Register NetTcp AIF Client
+    builder.Services.AddSingleton<AifNetTcpClient>();
+    
+    // Register AIF Client Adapter (with automatic fallback)
+    builder.Services.AddSingleton<IAifClient, AifClientAdapter>();
     builder.Services.AddSingleton<IWcfClient, WcfClient>();
-    builder.Services.AddSingleton<IBusinessConnector, BusinessConnectorClient>();
+    
+    // Register Business Connector (wrapper or direct)
+    var bcOptions = builder.Configuration.GetSection(BusinessConnectorOptions.SectionName).Get<BusinessConnectorOptions>() 
+        ?? new BusinessConnectorOptions();
+    
+    if (bcOptions.UseWrapper && !string.IsNullOrEmpty(bcOptions.WrapperUrl))
+    {
+        // Use HTTP wrapper service (.NET Framework BC.Wrapper)
+        builder.Services.AddHttpClient<IBusinessConnector, BusinessConnectorWrapperClient>();
+        Log.Information("Using BC.Wrapper service at {Url}", bcOptions.WrapperUrl);
+    }
+    else
+    {
+        // Use direct BC.NET (requires .NET Framework, will fail on .NET 8)
+        builder.Services.AddSingleton<IBusinessConnector, BusinessConnectorClient>();
+        Log.Warning("Using direct BC.NET - may not work on .NET 8. Consider using BC.Wrapper service.");
+    }
     
     // Register Validators
     builder.Services.AddSingleton<GetCustomerInputValidator>();
@@ -207,6 +231,9 @@ try
     builder.Services.AddHostedService<GBL.AX2012.MCP.Server.Resilience.SelfHealingService>(sp => 
         (GBL.AX2012.MCP.Server.Resilience.SelfHealingService)sp.GetRequiredService<GBL.AX2012.MCP.Server.Resilience.ISelfHealingService>());
     
+    // Register Configuration Validator
+    builder.Services.AddSingleton<ConfigurationValidator>();
+    
     // Register MCP Server (stdio)
     builder.Services.AddHostedService<McpServer>();
     
@@ -217,6 +244,20 @@ try
     builder.Services.AddHostedService<MetricsServer>();
     
     var host = builder.Build();
+    
+    // Validate configuration before starting
+    try
+    {
+        var configValidator = host.Services.GetRequiredService<GBL.AX2012.MCP.Server.Configuration.ConfigurationValidator>();
+        await configValidator.ValidateAsync();
+    }
+    catch (Exception ex)
+    {
+        Log.Fatal(ex, "Configuration validation failed. Application will not start.");
+        Environment.ExitCode = 1;
+        return;
+    }
+    
     await host.RunAsync();
 }
 catch (Exception ex)

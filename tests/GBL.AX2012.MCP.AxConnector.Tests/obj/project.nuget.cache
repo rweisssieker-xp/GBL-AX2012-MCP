@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "TnCagoTZgUw=",
+  "dgSpecHash": "Kiaccherl/A=",
   "success": true,
   "projectFilePath": "C:\\tmp\\GBL-AX2012-MCP\\tests\\GBL.AX2012.MCP.AxConnector.Tests\\GBL.AX2012.MCP.AxConnector.Tests.csproj",
   "expectedPackageFiles": [
@@ -102,7 +102,10 @@
     "C:\\Users\\reinerw\\.nuget\\packages\\system.security.cryptography.protecteddata\\4.4.0\\system.security.cryptography.protecteddata.4.4.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.security.cryptography.x509certificates\\4.3.0\\system.security.cryptography.x509certificates.4.3.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.security.cryptography.xml\\6.0.1\\system.security.cryptography.xml.6.0.1.nupkg.sha512",
+    "C:\\Users\\reinerw\\.nuget\\packages\\system.security.principal.windows\\5.0.0\\system.security.principal.windows.5.0.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.servicemodel.http\\6.0.0\\system.servicemodel.http.6.0.0.nupkg.sha512",
+    "C:\\Users\\reinerw\\.nuget\\packages\\system.servicemodel.netframingbase\\6.0.0\\system.servicemodel.netframingbase.6.0.0.nupkg.sha512",
+    "C:\\Users\\reinerw\\.nuget\\packages\\system.servicemodel.nettcp\\6.0.0\\system.servicemodel.nettcp.6.0.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.servicemodel.primitives\\6.0.0\\system.servicemodel.primitives.6.0.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.text.encoding\\4.3.0\\system.text.encoding.4.3.0.nupkg.sha512",
     "C:\\Users\\reinerw\\.nuget\\packages\\system.text.encoding.extensions\\4.3.0\\system.text.encoding.extensions.4.3.0.nupkg.sha512",
