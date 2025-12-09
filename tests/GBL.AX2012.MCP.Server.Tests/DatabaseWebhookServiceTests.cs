@@ -134,7 +134,8 @@ public class DatabaseWebhookServiceTests : IDisposable
         // Act
         await _service.UnsubscribeAsync(subscription.Id, CancellationToken.None);
         
-        // Assert
+        // Assert - Need to reload from database as UnsubscribeAsync uses a different context
+        await _context.Entry(_context.WebhookSubscriptions.Find(subscription.Id)!).ReloadAsync();
         var dbSubscription = await _context.WebhookSubscriptions.FindAsync(subscription.Id);
         dbSubscription.Should().NotBeNull();
         dbSubscription!.IsActive.Should().BeFalse();

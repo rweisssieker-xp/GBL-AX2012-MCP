@@ -85,7 +85,7 @@ public class WebhookIntegrationTests : IClassFixture<TestFixture>
         
         // Assert
         unsubscribeResult.Success.Should().BeTrue();
-        var unsubscribeOutput = JsonSerializer.Deserialize<UnsubscribeWebhookOutput>(unsubscribeResult.Data!.ToString()!);
+        var unsubscribeOutput = unsubscribeResult.Data as UnsubscribeWebhookOutput ?? JsonSerializer.Deserialize<UnsubscribeWebhookOutput>(JsonSerializer.Serialize(unsubscribeResult.Data));
         unsubscribeOutput.Should().NotBeNull();
         unsubscribeOutput!.Success.Should().BeTrue();
     }

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GBL.AX2012.MCP.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f1e19caa590e777a234751ffb9edfdbe18853450")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5d844a6dc3cd8a02dc6cb839973250613445777c")]
 [assembly: System.Reflection.AssemblyProductAttribute("GBL.AX2012.MCP.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GBL.AX2012.MCP.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

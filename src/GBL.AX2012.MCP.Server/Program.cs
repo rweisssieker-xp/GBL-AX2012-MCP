@@ -17,7 +17,6 @@ using GBL.AX2012.MCP.AxConnector.Clients;
 using GBL.AX2012.MCP.AxConnector.Interfaces;
 using GBL.AX2012.MCP.Audit.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 // Configure Serilog
 Log.Logger = new LoggerConfiguration()

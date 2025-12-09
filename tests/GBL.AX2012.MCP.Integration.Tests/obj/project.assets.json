@@ -3558,6 +3558,7 @@
         "dependencies": {
           "GBL.AX2012.MCP.Core": "1.0.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "8.0.0",
+          "Microsoft.Extensions.Configuration.Json": "8.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "8.0.0"
         },
         "compile": {

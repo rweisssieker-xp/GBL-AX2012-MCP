@@ -1,0 +1,304 @@
+2025-12-09 06:30:05.552 +01:00 [INF] Starting GBL-AX2012-MCP Server {"MachineName":"GBL-W6744"}
+2025-12-09 06:30:05.738 +01:00 [FTL] Application terminated unexpectedly {"MachineName":"GBL-W6744"}
+System.AggregateException: Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Core.Interfaces.ITool Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Tools.BatchOperationsTool': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>) (Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Core.Interfaces.ITool Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Tools.GetSelfHealingStatusTool': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.GetSelfHealingStatusTool) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService) (Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor'.
+GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor) (Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Server.Resilience.ISelfHealingService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Resilience.SelfHealingService': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService) (Error while validating the service descriptor 'ServiceType: Microsoft.Extensions.Hosting.IHostedService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.McpServer': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.McpServer) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>) (Error while validating the service descriptor 'ServiceType: Microsoft.Extensions.Hosting.IHostedService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Transport.HttpTransport': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.Transport.HttpTransport) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>)
+ ---> System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Core.Interfaces.ITool Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Tools.BatchOperationsTool': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateEnumerable(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   at Microsoft.Extensions.DependencyInjection.ServiceCollectionContainerBuilderExtensions.BuildServiceProvider(IServiceCollection services, ServiceProviderOptions options)
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.<>c__DisplayClass12_0.<.ctor>b__0()
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
+   at Program.<Main>$(String[] args) in C:\tmp\GBL-AX2012-MCP\src\GBL.AX2012.MCP.Server\Program.cs:line 219
+ ---> (Inner Exception #1) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Core.Interfaces.ITool Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Tools.GetSelfHealingStatusTool': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.GetSelfHealingStatusTool) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.GetSelfHealingStatusTool) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #2) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor'.
+GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor'.
+GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #3) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Server.Resilience.ISelfHealingService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Resilience.SelfHealingService': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #4) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Microsoft.Extensions.Hosting.IHostedService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.McpServer': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.McpServer) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.McpServer) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateEnumerable(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #5) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Microsoft.Extensions.Hosting.IHostedService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Transport.HttpTransport': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.Transport.HttpTransport) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.Transport.HttpTransport) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateEnumerable(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+2025-12-09 06:32:05.301 +01:00 [INF] Starting GBL-AX2012-MCP Server {"MachineName":"GBL-W6744"}
+2025-12-09 06:32:05.465 +01:00 [FTL] Application terminated unexpectedly {"MachineName":"GBL-W6744"}
+System.AggregateException: Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Core.Interfaces.ITool Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Tools.BatchOperationsTool': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>) (Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Core.Interfaces.ITool Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Tools.GetSelfHealingStatusTool': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.GetSelfHealingStatusTool) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService) (Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor'.
+GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor) (Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Server.Resilience.ISelfHealingService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Resilience.SelfHealingService': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService) (Error while validating the service descriptor 'ServiceType: Microsoft.Extensions.Hosting.IHostedService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.McpServer': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.McpServer) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>) (Error while validating the service descriptor 'ServiceType: Microsoft.Extensions.Hosting.IHostedService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Transport.HttpTransport': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.Transport.HttpTransport) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>)
+ ---> System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Core.Interfaces.ITool Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Tools.BatchOperationsTool': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateEnumerable(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)
+   at Microsoft.Extensions.DependencyInjection.ServiceCollectionContainerBuilderExtensions.BuildServiceProvider(IServiceCollection services, ServiceProviderOptions options)
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.<>c__DisplayClass12_0.<.ctor>b__0()
+   at Microsoft.Extensions.Hosting.HostApplicationBuilder.Build()
+   at Program.<Main>$(String[] args) in C:\tmp\GBL-AX2012-MCP\src\GBL.AX2012.MCP.Server\Program.cs:line 219
+ ---> (Inner Exception #1) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Core.Interfaces.ITool Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Tools.GetSelfHealingStatusTool': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.GetSelfHealingStatusTool) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.GetSelfHealingStatusTool) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #2) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor'.
+GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor'.
+GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #3) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: GBL.AX2012.MCP.Server.Resilience.ISelfHealingService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Resilience.SelfHealingService': A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'GBL.AX2012.MCP.Server.Resilience.ISelfHealingService'.
+GBL.AX2012.MCP.Server.Resilience.ISelfHealingService(GBL.AX2012.MCP.Server.Resilience.SelfHealingService) -> GBL.AX2012.MCP.Server.Resilience.IConnectionPoolMonitor(GBL.AX2012.MCP.Server.Resilience.ConnectionPoolMonitor) -> GBL.AX2012.MCP.Server.Resilience.ISelfHealingService
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #4) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Microsoft.Extensions.Hosting.IHostedService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.McpServer': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.McpServer) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.McpServer) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateEnumerable(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
+ ---> (Inner Exception #5) System.InvalidOperationException: Error while validating the service descriptor 'ServiceType: Microsoft.Extensions.Hosting.IHostedService Lifetime: Singleton ImplementationType: GBL.AX2012.MCP.Server.Transport.HttpTransport': A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.Transport.HttpTransport) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+ ---> System.InvalidOperationException: A circular dependency was detected for the service of type 'System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>'.
+Microsoft.Extensions.Hosting.IHostedService(GBL.AX2012.MCP.Server.Transport.HttpTransport) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool> -> GBL.AX2012.MCP.Core.Interfaces.ITool(GBL.AX2012.MCP.Server.Tools.BatchOperationsTool) -> System.Collections.Generic.IEnumerable<GBL.AX2012.MCP.Core.Interfaces.ITool>
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteChain.CheckCircularDependency(ServiceIdentifier serviceIdentifier)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateEnumerable(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   --- End of inner exception stack trace ---
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)<---
+
