@@ -43,7 +43,7 @@ Then use the [API Reference](02-API-REFERENCE.md) for detailed tool documentatio
 ### For IT Operations
 
 Start with the [Operations Manual](04-OPERATIONS-MANUAL.md) to learn:
-- Deployment options (Windows Service, Docker)
+- Deployment as Windows Service
 - Monitoring and alerting
 - Maintenance procedures
 - Emergency procedures

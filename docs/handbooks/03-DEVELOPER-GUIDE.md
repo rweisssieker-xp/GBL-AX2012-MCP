@@ -101,8 +101,6 @@ GBL.AX2012.MCP/
 │
 ├── n8n-workflows/                      # n8n workflow templates
 │
-├── Dockerfile
-├── docker-compose.yml
 └── GBL.AX2012.MCP.sln
 ```
 
@@ -115,7 +113,6 @@ GBL.AX2012.MCP/
 - .NET 8.0 SDK
 - Visual Studio 2022 or VS Code with C# extension
 - Git
-- (Optional) Docker Desktop
 - (Optional) Access to AX 2012 R3 development environment
 
 ### Clone and Build
@@ -641,33 +638,6 @@ Logs are written to `logs/mcp-{date}.log` using Serilog:
 ---
 
 ## Deployment
-
-### Docker
-
-```bash
-# Build image
-docker build -t gbl-ax2012-mcp:1.4.0 .
-
-# Run container
-docker run -d \
-  -p 8080:8080 \
-  -p 9090:9090 \
-  -e AifClient__BaseUrl=http://ax-aos:8101/DynamicsAx/Services \
-  gbl-ax2012-mcp:1.4.0
-```
-
-### Docker Compose
-
-```bash
-# Start all services (MCP, Prometheus, Grafana)
-docker-compose up -d
-
-# View logs
-docker-compose logs -f mcp-server
-
-# Stop
-docker-compose down
-```
 
 ### Windows Service
 

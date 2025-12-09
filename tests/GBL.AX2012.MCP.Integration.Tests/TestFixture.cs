@@ -1,14 +1,19 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 using GBL.AX2012.MCP.Core.Interfaces;
 using GBL.AX2012.MCP.Core.Options;
 using GBL.AX2012.MCP.Server.Middleware;
 using GBL.AX2012.MCP.Server.Security;
 using GBL.AX2012.MCP.Server.Tools;
 using GBL.AX2012.MCP.Server.Approval;
+using GBL.AX2012.MCP.Server.Events;
+using GBL.AX2012.MCP.Server.Webhooks;
+using GBL.AX2012.MCP.Server.Resilience;
 using GBL.AX2012.MCP.AxConnector.Interfaces;
 using GBL.AX2012.MCP.Audit.Services;
+using GBL.AX2012.MCP.Audit.Data;
 using GBL.AX2012.MCP.Integration.Tests.Mocks;
 
 namespace GBL.AX2012.MCP.Integration.Tests;
@@ -37,6 +42,7 @@ public class TestFixture : IDisposable
         services.Configure<CircuitBreakerOptions>(o => { o.FailureThreshold = 5; o.OpenDuration = TimeSpan.FromSeconds(30); });
         services.Configure<AuditOptions>(o => { o.FileLogPath = "logs/test-audit"; });
         services.Configure<SecurityOptions>(o => { o.ApprovalThreshold = 50000; });
+        services.Configure<WebhookServiceOptions>(o => { o.MaxConcurrentDeliveries = 10; o.DeliveryTimeoutSeconds = 30; });
         
         // Middleware
         services.AddSingleton<IRateLimiter, RateLimiter>();
@@ -49,6 +55,19 @@ public class TestFixture : IDisposable
         
         // Audit
         services.AddSingleton<IAuditService, FileAuditService>();
+        
+        // Event Bus
+        services.AddSingleton<IEventBus, EventBus>();
+        
+        // Webhook Service (InMemory DB for tests)
+        services.AddDbContextFactory<WebhookDbContext>(options =>
+            options.UseInMemoryDatabase("TestWebhooks"));
+        services.AddHttpClient();
+        services.AddSingleton<IWebhookService, DatabaseWebhookService>();
+        
+        // Self-Healing Services
+        services.AddSingleton<IConnectionPoolMonitor, ConnectionPoolMonitor>();
+        services.AddSingleton<ISelfHealingService, SelfHealingService>();
         
         // Mock AX Connectors
         services.AddSingleton<IAifClient>(AifClient);
@@ -64,8 +83,13 @@ public class TestFixture : IDisposable
         services.AddSingleton<CheckCreditInputValidator>();
         services.AddSingleton<GetItemInputValidator>();
         services.AddSingleton<UpdateSalesOrderInputValidator>();
+        services.AddSingleton<BatchOperationsInputValidator>();
+        services.AddSingleton<SubscribeWebhookInputValidator>();
+        services.AddSingleton<UnsubscribeWebhookInputValidator>();
+        services.AddSingleton<GetRoiMetricsInputValidator>();
+        services.AddSingleton<BulkImportInputValidator>();
         
-        // Tools
+        // Tools - Existing
         services.AddSingleton<HealthCheckTool>();
         services.AddSingleton<GetCustomerTool>();
         services.AddSingleton<GetSalesOrderTool>();
@@ -75,6 +99,37 @@ public class TestFixture : IDisposable
         services.AddSingleton<CheckCreditTool>();
         services.AddSingleton<GetItemTool>();
         services.AddSingleton<UpdateSalesOrderTool>();
+        
+        // Tools - Epic 7: Batch Operations & Webhooks
+        var serviceProvider = services.BuildServiceProvider();
+        var allTools = new List<ITool>
+        {
+            serviceProvider.GetRequiredService<HealthCheckTool>(),
+            serviceProvider.GetRequiredService<GetCustomerTool>(),
+            serviceProvider.GetRequiredService<GetSalesOrderTool>(),
+            serviceProvider.GetRequiredService<CheckInventoryTool>(),
+            serviceProvider.GetRequiredService<SimulatePriceTool>(),
+            serviceProvider.GetRequiredService<CreateSalesOrderTool>(),
+            serviceProvider.GetRequiredService<CheckCreditTool>(),
+            serviceProvider.GetRequiredService<GetItemTool>(),
+            serviceProvider.GetRequiredService<UpdateSalesOrderTool>()
+        };
+        
+        services.AddSingleton<BatchOperationsTool>(sp => new BatchOperationsTool(
+            sp.GetRequiredService<ILogger<BatchOperationsTool>>(),
+            sp.GetRequiredService<IAuditService>(),
+            sp.GetRequiredService<BatchOperationsInputValidator>(),
+            sp,
+            allTools));
+        
+        services.AddSingleton<SubscribeWebhookTool>();
+        services.AddSingleton<ListWebhooksTool>();
+        services.AddSingleton<UnsubscribeWebhookTool>();
+        services.AddSingleton<GetRoiMetricsTool>();
+        services.AddSingleton<BulkImportTool>();
+        
+        // Tools - Epic 8: Self-Healing
+        services.AddSingleton<GetSelfHealingStatusTool>();
         
         Services = services.BuildServiceProvider();
     }

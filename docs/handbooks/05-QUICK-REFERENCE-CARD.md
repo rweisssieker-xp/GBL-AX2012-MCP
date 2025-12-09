@@ -186,9 +186,6 @@ curl http://localhost:9090/metrics | grep mcp_
 
 # View logs (Windows)
 Get-Content logs\mcp-*.log -Tail 50
-
-# View logs (Linux/Docker)
-tail -f logs/mcp-*.log
 ```
 
 ---

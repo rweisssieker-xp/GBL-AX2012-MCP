@@ -68,8 +68,8 @@ public class GetRoiMetricsToolTests
         result.Success.Should().BeTrue();
         var output = JsonSerializer.Deserialize<GetRoiMetricsOutput>(result.Data!.ToString()!);
         output.Should().NotBeNull();
-        result.TotalOperations.Should().BeGreaterThan(0);
-        result.ByTool.Should().NotBeEmpty();
+        output!.TotalOperations.Should().BeGreaterThan(0);
+        output.ByTool.Should().NotBeEmpty();
     }
 }
 

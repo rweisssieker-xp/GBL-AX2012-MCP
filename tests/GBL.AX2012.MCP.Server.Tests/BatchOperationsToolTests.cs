@@ -56,10 +56,11 @@ public class BatchOperationsToolTests
         // Act
         var inputJson = JsonSerializer.SerializeToElement(input);
         var result = await tool.ExecuteAsync(inputJson, context, CancellationToken.None);
-        var output = JsonSerializer.Deserialize<BatchOperationsOutput>(result.Data!.ToString()!);
         
         // Assert
         result.Success.Should().BeTrue();
+        result.Data.Should().NotBeNull();
+        var output = result.Data as BatchOperationsOutput ?? JsonSerializer.Deserialize<BatchOperationsOutput>(JsonSerializer.Serialize(result.Data));
         output.Should().NotBeNull();
         output!.Total.Should().Be(1);
         output.Successful.Should().Be(1);
@@ -102,7 +103,6 @@ public class BatchOperationsToolTests
         // Act
         var inputJson = JsonSerializer.SerializeToElement(input);
         var result = await tool.ExecuteAsync(inputJson, context, CancellationToken.None);
-        var output = JsonSerializer.Deserialize<BatchOperationsOutput>(result.Data!.ToString()!);
         
         // Assert
         result.Success.Should().BeTrue();
@@ -156,9 +156,10 @@ public class BatchOperationsToolTests
         
         // Assert
         result.Success.Should().BeTrue();
-        var output = JsonSerializer.Deserialize<BatchOperationsOutput>(result.Data!.ToString()!);
-        output.Should().NotBeNull();
-        output!.Results.Should().HaveCountLessOrEqualTo(2); // May stop after first error
+        result.Data.Should().NotBeNull();
+        var output3 = result.Data as BatchOperationsOutput ?? JsonSerializer.Deserialize<BatchOperationsOutput>(JsonSerializer.Serialize(result.Data));
+        output3.Should().NotBeNull();
+        output3!.Results.Should().HaveCountLessOrEqualTo(2); // May stop after first error
     }
 }
 

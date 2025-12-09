@@ -4,6 +4,7 @@ using Moq;
 using Xunit;
 using FluentAssertions;
 using GBL.AX2012.MCP.Core.Interfaces;
+using GBL.AX2012.MCP.Core.Models;
 using GBL.AX2012.MCP.Server.Tools;
 using GBL.AX2012.MCP.Server.Resilience;
 
@@ -64,7 +65,7 @@ public class GetSelfHealingStatusToolTests
             _audit.Object,
             _selfHealingService.Object);
         
-        var input = new GetSelfHealingStatusInput();
+        var input = new { }; // GetSelfHealingStatusTool uses object as input
         var context = new ToolContext { UserId = "test" };
         
         // Act

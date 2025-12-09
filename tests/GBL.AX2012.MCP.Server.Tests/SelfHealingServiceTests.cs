@@ -4,6 +4,7 @@ using Xunit;
 using FluentAssertions;
 using GBL.AX2012.MCP.Server.Resilience;
 using GBL.AX2012.MCP.Core.Interfaces;
+using GBL.AX2012.MCP.Server.Middleware;
 
 namespace GBL.AX2012.MCP.Server.Tests;
 
@@ -24,8 +25,8 @@ public class SelfHealingServiceTests
     public async Task GetStatusAsync_ReturnsStatus()
     {
         // Arrange
-        _circuitBreaker.Setup(c => c.GetState(It.IsAny<string>()))
-            .Returns("closed");
+        _circuitBreaker.SetupGet(c => c.State)
+            .Returns(CircuitState.Closed);
         
         _connectionPoolMonitor.Setup(c => c.GetAllStatuses())
             .Returns(new Dictionary<string, ConnectionPoolStatus>

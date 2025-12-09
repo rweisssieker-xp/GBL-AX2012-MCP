@@ -147,8 +147,6 @@ GBL.AX2012.MCP/
 │   └── api/
 │
 └── deploy/
-    ├── Dockerfile
-    ├── docker-compose.yml
     └── install-service.ps1
 ```
 

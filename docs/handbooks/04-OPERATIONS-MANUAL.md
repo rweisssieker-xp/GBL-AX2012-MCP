@@ -20,7 +20,7 @@ This manual covers deployment, monitoring, maintenance, and troubleshooting for 
 
 | Component | Requirement |
 |-----------|-------------|
-| Operating System | Windows Server 2019+ or Linux (Docker) |
+| Operating System | Windows Server 2019+ |
 | Runtime | .NET 8.0 Runtime |
 | Network | Access to AX 2012 R3 AOS |
 | Authentication | Windows AD domain membership |
@@ -46,37 +46,6 @@ sc.exe config GBL-AX2012-MCP obj= "DOMAIN\svc-mcp" password= "password"
 
 # 4. Start service
 Start-Service GBL-AX2012-MCP
-```
-
-#### Option 2: Docker
-
-```bash
-# Build image
-docker build -t gbl-ax2012-mcp:1.4.0 .
-
-# Run with environment variables
-docker run -d \
-  --name mcp-server \
-  -p 8080:8080 \
-  -p 9090:9090 \
-  -v /var/log/mcp:/app/logs \
-  -e AifClient__BaseUrl=http://ax-aos:8101/DynamicsAx/Services \
-  -e AifClient__Company=DAT \
-  -e WcfClient__BaseUrl=http://ax-aos:8101/DynamicsAx/Services/GblSalesOrderService \
-  gbl-ax2012-mcp:1.4.0
-```
-
-#### Option 3: Docker Compose (Full Stack)
-
-```bash
-# Start MCP + Prometheus + Grafana
-docker-compose up -d
-
-# Check status
-docker-compose ps
-
-# View logs
-docker-compose logs -f mcp-server
 ```
 
 ### Configuration
@@ -334,7 +303,6 @@ The Health Monitor service sends automatic alerts:
 | Deployment | Log Path |
 |------------|----------|
 | Windows Service | `C:\Services\GBL-AX2012-MCP\logs\` |
-| Docker | `/app/logs/` (mount volume) |
 
 #### Log Rotation
 
@@ -409,28 +377,6 @@ Copy-Item C:\Services\GBL-AX2012-MCP\logs\* C:\Backups\mcp\logs\
 5. Verify health endpoint
 
 ### Updates
-
-#### Rolling Update (Docker)
-
-```bash
-# Pull new image
-docker pull gbl-ax2012-mcp:1.5.0
-
-# Stop old container
-docker stop mcp-server
-
-# Start new container
-docker run -d --name mcp-server-new \
-  -p 8080:8080 -p 9090:9090 \
-  gbl-ax2012-mcp:1.5.0
-
-# Verify health
-curl http://localhost:8080/health
-
-# Remove old container
-docker rm mcp-server
-docker rename mcp-server-new mcp-server
-```
 
 #### Windows Service Update
 
@@ -600,9 +546,6 @@ POST /tools/call
 ```powershell
 # Windows
 Restart-Service GBL-AX2012-MCP
-
-# Docker
-docker restart mcp-server
 ```
 
 #### Rollback
@@ -613,10 +556,6 @@ Stop-Service GBL-AX2012-MCP
 Remove-Item C:\Services\GBL-AX2012-MCP -Recurse
 Rename-Item C:\Services\GBL-AX2012-MCP.backup C:\Services\GBL-AX2012-MCP
 Start-Service GBL-AX2012-MCP
-
-# Docker
-docker stop mcp-server
-docker run -d --name mcp-server gbl-ax2012-mcp:1.3.0  # Previous version
 ```
 
 ---

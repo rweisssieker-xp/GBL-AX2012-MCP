@@ -6,3 +6,8 @@
 !.gitattributes
 !.github/
 !.github/**
+
+# Ignore Docker files (not part of MCP)
+Dockerfile
+docker-compose.yml
+*.dockerignore

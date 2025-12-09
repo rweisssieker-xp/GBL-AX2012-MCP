@@ -231,3 +231,4 @@ C:\tmp\GBL-AX2012-MCP\tests\GBL.AX2012.MCP.Integration.Tests\obj\Debug\net8.0\re
 C:\tmp\GBL-AX2012-MCP\tests\GBL.AX2012.MCP.Integration.Tests\obj\Debug\net8.0\GBL.AX2012.MCP.Integration.Tests.pdb
 C:\tmp\GBL-AX2012-MCP\tests\GBL.AX2012.MCP.Integration.Tests\obj\Debug\net8.0\GBL.AX2012.MCP.Integration.Tests.genruntimeconfig.cache
 C:\tmp\GBL-AX2012-MCP\tests\GBL.AX2012.MCP.Integration.Tests\obj\Debug\net8.0\ref\GBL.AX2012.MCP.Integration.Tests.dll
+C:\tmp\GBL-AX2012-MCP\tests\GBL.AX2012.MCP.Integration.Tests\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll

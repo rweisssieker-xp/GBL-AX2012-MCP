@@ -4,7 +4,9 @@ using Moq;
 using Xunit;
 using FluentAssertions;
 using GBL.AX2012.MCP.Core.Interfaces;
+using GBL.AX2012.MCP.Core.Models;
 using GBL.AX2012.MCP.Server.Tools;
+using GBL.AX2012.MCP.AxConnector.Interfaces;
 
 namespace GBL.AX2012.MCP.Server.Tests;
 
@@ -12,11 +14,15 @@ public class BulkImportToolTests
 {
     private readonly Mock<ILogger<BulkImportTool>> _logger;
     private readonly Mock<IAuditService> _audit;
+    private readonly Mock<IAifClient> _aifClient;
+    private readonly Mock<IWcfClient> _wcfClient;
     
     public BulkImportToolTests()
     {
         _logger = new Mock<ILogger<BulkImportTool>>();
         _audit = new Mock<IAuditService>();
+        _aifClient = new Mock<IAifClient>();
+        _wcfClient = new Mock<IWcfClient>();
     }
     
     [Fact]
@@ -26,14 +32,16 @@ public class BulkImportToolTests
         var tool = new BulkImportTool(
             _logger.Object,
             _audit.Object,
-            new BulkImportInputValidator());
+            new BulkImportInputValidator(),
+            _aifClient.Object,
+            _wcfClient.Object);
         
         var csvData = "customer_account,name\nCUST-001,Test Customer 1\nCUST-002,Test Customer 2";
         var input = new BulkImportInput
         {
             Data = csvData,
             Format = "csv",
-            EntityType = "customer"
+            Type = "customers"
         };
         
         var context = new ToolContext { UserId = "test" };
@@ -46,7 +54,7 @@ public class BulkImportToolTests
         result.Success.Should().BeTrue();
         var output = JsonSerializer.Deserialize<BulkImportOutput>(result.Data!.ToString()!);
         output.Should().NotBeNull();
-        output!.TotalRecords.Should().BeGreaterThan(0);
+        output!.Total.Should().BeGreaterThan(0);
     }
     
     [Fact]
@@ -56,13 +64,15 @@ public class BulkImportToolTests
         var tool = new BulkImportTool(
             _logger.Object,
             _audit.Object,
-            new BulkImportInputValidator());
+            new BulkImportInputValidator(),
+            _aifClient.Object,
+            _wcfClient.Object);
         
         var input = new BulkImportInput
         {
             Data = "invalid data",
             Format = "invalid",
-            EntityType = "customer"
+            Type = "customers"
         };
         
         var context = new ToolContext { UserId = "test" };

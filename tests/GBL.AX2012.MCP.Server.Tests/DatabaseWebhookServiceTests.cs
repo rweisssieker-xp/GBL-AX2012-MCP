@@ -13,6 +13,7 @@ using GBL.AX2012.MCP.Server.Events;
 using GBL.AX2012.MCP.Server.Webhooks;
 using GBL.AX2012.MCP.Audit.Data;
 using GBL.AX2012.MCP.Core.Models;
+using GBL.AX2012.MCP.Core.Interfaces;
 
 namespace GBL.AX2012.MCP.Server.Tests;
 
@@ -24,11 +25,13 @@ public class DatabaseWebhookServiceTests : IDisposable
     private readonly Mock<HttpMessageHandler> _httpHandler;
     private readonly HttpClient _httpClient;
     private readonly DatabaseWebhookService _service;
+    private readonly IDbContextFactory<WebhookDbContext> _contextFactory;
     
     public DatabaseWebhookServiceTests()
     {
+        var databaseName = Guid.NewGuid().ToString();
         var options = new DbContextOptionsBuilder<WebhookDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(databaseName: databaseName)
             .Options;
         
         _context = new WebhookDbContext(options);
@@ -37,9 +40,8 @@ public class DatabaseWebhookServiceTests : IDisposable
         _httpHandler = new Mock<HttpMessageHandler>();
         _httpClient = new HttpClient(_httpHandler.Object);
         
-        var contextFactory = new Mock<IDbContextFactory<WebhookDbContext>>();
-        contextFactory.Setup(f => f.CreateDbContextAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(_context);
+        // Create a real factory that returns new contexts sharing the same in-memory database
+        _contextFactory = new TestDbContextFactory(_context, databaseName);
         
         var webhookOptions = Options.Create(new WebhookServiceOptions
         {
@@ -51,7 +53,7 @@ public class DatabaseWebhookServiceTests : IDisposable
             _logger.Object,
             _httpClient,
             _eventBus.Object,
-            contextFactory.Object,
+            _contextFactory,
             webhookOptions);
     }
     
@@ -72,7 +74,9 @@ public class DatabaseWebhookServiceTests : IDisposable
         result.Id.Should().NotBeEmpty();
         result.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         
-        var dbSubscription = await _context.WebhookSubscriptions.FindAsync(result.Id);
+        // Use a new context to verify the subscription was saved
+        await using var verifyContext = await _contextFactory.CreateDbContextAsync(CancellationToken.None);
+        var dbSubscription = await verifyContext.WebhookSubscriptions.FindAsync(result.Id);
         dbSubscription.Should().NotBeNull();
         dbSubscription!.EventType.Should().Be("salesorder.created");
     }

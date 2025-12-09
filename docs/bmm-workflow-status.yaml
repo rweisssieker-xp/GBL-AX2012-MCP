@@ -119,8 +119,6 @@ workflows:
     status: COMPLETED
     completed_at: 2025-12-06
     outputs:
-      - Dockerfile
-      - docker-compose.yml
       - monitoring/prometheus.yml
       - monitoring/grafana/dashboards/mcp-server.json
     

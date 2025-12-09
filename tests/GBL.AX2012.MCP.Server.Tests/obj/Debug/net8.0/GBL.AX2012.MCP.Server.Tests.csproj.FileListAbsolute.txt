@@ -232,3 +232,4 @@ C:\tmp\GBL-AX2012-MCP\tests\GBL.AX2012.MCP.Server.Tests\obj\Debug\net8.0\refint\
 C:\tmp\GBL-AX2012-MCP\tests\GBL.AX2012.MCP.Server.Tests\obj\Debug\net8.0\GBL.AX2012.MCP.Server.Tests.pdb
 C:\tmp\GBL-AX2012-MCP\tests\GBL.AX2012.MCP.Server.Tests\obj\Debug\net8.0\GBL.AX2012.MCP.Server.Tests.genruntimeconfig.cache
 C:\tmp\GBL-AX2012-MCP\tests\GBL.AX2012.MCP.Server.Tests\obj\Debug\net8.0\ref\GBL.AX2012.MCP.Server.Tests.dll
+C:\tmp\GBL-AX2012-MCP\tests\GBL.AX2012.MCP.Server.Tests\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.InMemory.dll
